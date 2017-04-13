@@ -28,12 +28,14 @@ contract DeliveryContract is Assertive {
 
     struct Party {
       address wallet;
-      bytes32 identifier;
+      uint amount;
     }
 
     Attribute [] public attributes;
 
     Measurement [] measurements;
+    
+    Party [] parties;
 
     FoodToken public foodToken;
 
@@ -49,9 +51,25 @@ contract DeliveryContract is Assertive {
         foodToken = FoodToken(_foodTokenAddress);
     }
 
-    function inviteParticipants(uint amount) only_owner returns (bool success) {
-      escrowed_amount = amount;
-      return foodToken.transferFrom(owner, this, amount);
+    function inviteParticipants(address [] _parties, uint [] _amounts) only_owner returns (bool) {
+      escrowed_amount = sum(_amounts);
+      for (uint i = 0; i < _parties.length; i++) {
+          parties.push(Party(_parties[i], _amounts[i]));
+      }
+      return foodToken.transferFrom(owner, this, escrowed_amount);
+    }
+
+    function sum(uint[] memory self) internal returns (uint r) {
+      r = self[0];
+      for (uint i = 1; i < self.length; i++) {
+        r += self[i];
+      }
+    }
+
+    function approve() only_owner {
+      for (uint i = 0; i < parties.length; i++) {
+          foodToken.transfer(parties[i].wallet, parties[i].amount);
+      }
     }
 
     function reimburse() only_owner {
