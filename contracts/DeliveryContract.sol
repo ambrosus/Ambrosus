@@ -10,6 +10,15 @@ contract DeliveryContract is Assertive {
 
     uint escrowed_amount;
 
+    enum Stages {
+        New,
+        WaitingForParties,
+        InProgress,
+        Complete,
+        Canceled,
+        Reimbursed
+    }
+
     struct Attribute {
       bytes32 identifer;
       int min;
@@ -31,6 +40,8 @@ contract DeliveryContract is Assertive {
       uint amount;
     }
 
+    Stages public stage = Stages.New;
+
     Attribute [] public attributes;
 
     Measurement [] measurements;
@@ -39,8 +50,13 @@ contract DeliveryContract is Assertive {
 
     FoodToken public foodToken;
 
-    modifier only_owner {
+    modifier onlyOwner {
         assert(msg.sender == owner);
+        _;
+    }
+    
+    modifier onlyStage(Stages _stage) {
+        if (stage != _stage) throw;
         _;
     }
 
@@ -51,7 +67,7 @@ contract DeliveryContract is Assertive {
         foodToken = FoodToken(_foodTokenAddress);
     }
 
-    function inviteParticipants(address [] _parties, uint [] _amounts) only_owner returns (bool) {
+    function inviteParticipants(address [] _parties, uint [] _amounts) onlyOwner returns (bool) {
       escrowed_amount = sum(_amounts);
       for (uint i = 0; i < _parties.length; i++) {
           parties.push(Party(_parties[i], _amounts[i]));
@@ -59,20 +75,20 @@ contract DeliveryContract is Assertive {
       return foodToken.transferFrom(owner, this, escrowed_amount);
     }
 
-    function sum(uint[] memory self) internal returns (uint r) {
+    function sum(uint[] memory self) internal constant returns (uint r) {
       r = self[0];
       for (uint i = 1; i < self.length; i++) {
         r += self[i];
       }
     }
 
-    function approve() only_owner {
+    function approve() onlyOwner {
       for (uint i = 0; i < parties.length; i++) {
           foodToken.transfer(parties[i].wallet, parties[i].amount);
       }
     }
 
-    function reimburse() only_owner {
+    function reimburse() onlyOwner {
       if (msg.sender != owner) throw;
       uint amount = escrowed_amount;
       escrowed_amount = 0;

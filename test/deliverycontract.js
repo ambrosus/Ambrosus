@@ -7,8 +7,8 @@ const testutils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
 
 let delivery;
-let token;
 
+let token;
 
 function setup(accounts) {
   DeliveryContract.deployed("The Name", "The Code").then((deployed) => { delivery = deployed; });
@@ -55,6 +55,14 @@ contract('DeliveryContract', function(accounts) {
     }).then(() => {
       token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 1000));
       token.balanceOf(delivery.address).then( (balance) => assert.equal(balance, 0));
+    });
+  });
+
+  it("should grant balance", function() {
+    return token.grant(accounts[1], 1234).then(function(name) {
+      return token.balanceOf(accounts[1])
+    }).then((balance) => {
+      assert.equal(balance, 1234);
     });
   });
 
