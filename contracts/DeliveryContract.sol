@@ -12,6 +12,7 @@ contract DeliveryContract is Assertive {
 
     enum Stages {
         New,
+        HasAttributes,
         WaitingForParties,
         InProgress,
         Complete,
@@ -67,7 +68,8 @@ contract DeliveryContract is Assertive {
         foodToken = FoodToken(_foodTokenAddress);
     }
 
-    function setAttributes(bytes32 [] _identifers, int [] _mins, int [] _maxs) onlyOwner onlyStage(Stages.New) {
+    function setAttributes(bytes32 [] _identifers, int [] _mins, int [] _maxs) onlyOwner {
+      stage = Stages.HasAttributes;
       if (_identifers.length != _mins.length) throw;
       if (_identifers.length != _maxs.length) throw;
       for (uint i = 0; i < _identifers.length; i++) {
@@ -76,6 +78,7 @@ contract DeliveryContract is Assertive {
     }
 
     function inviteParticipants(address [] _parties, uint [] _amounts) onlyOwner returns (bool) {
+      stage = Stages.InProgress;
       escrowed_amount = sum(_amounts);
       for (uint i = 0; i < _parties.length; i++) {
           parties.push(Party(_parties[i], _amounts[i]));
@@ -87,10 +90,12 @@ contract DeliveryContract is Assertive {
       for (uint i = 0; i < parties.length; i++) {
           foodToken.transfer(parties[i].wallet, parties[i].amount);
       }
+      stage = Stages.Complete;
     }
 
     function reimburse() onlyOwner {
       if (msg.sender != owner) throw;
+      stage = Stages.Reimbursed;
       uint amount = escrowed_amount;
       escrowed_amount = 0;
       foodToken.transfer(owner, amount);
