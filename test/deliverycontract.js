@@ -11,59 +11,83 @@ let delivery;
 let token;
 
 function setup(accounts) {
-  DeliveryContract.deployed("The Name", "The Code").then((deployed) => { delivery = deployed; });
-  FoodToken.deployed().then((deployed) => { 
-    token = deployed; 
-    deployed.grant(accounts[0], 1000);
-  });
+  DeliveryContract.deployed("The Name", "The Code").then((deployed) => delivery = deployed );
+  FoodToken.deployed().then((deployed) => token = deployed);
 }
 
 contract('DeliveryContract', function(accounts) {
-  before('Init contracts', () => { setup(accounts); });
+  before('Init contracts', (done) => { setup(accounts); done(); });
 
-  it("should puts tokens in escrow and approve", (done) => {
-    token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 1000));
-    token.approve(delivery.address, 100) .then(() => {
-      token.allowance(accounts[0], delivery.address).then((allowance) => { assert.equal(allowance, 100); } );
-      return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67])
-    }).then((balance) => {
-      token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 900));
-      token.balanceOf(delivery.address).then( (balance) => assert.equal(balance, 100));
+  it("should puts tokens in escrow and approve", () => {
+    token.grant(accounts[0], 1000)
+    .then( () =>
+      token.balanceOf(accounts[0])
+    ).then( (balance) => 
+      assert.equal(balance, 1000)
+    ).then( () =>
+      token.approve(delivery.address, 100)
+    ).then( () => 
+      token.allowance(accounts[0], delivery.address) 
+    ).then( (allowance) => {
+      assert.equal(allowance, 100);
+      return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
+    }).then( (balance) => 
+      token.balanceOf(accounts[0])
+    ).then( (balance) => {
+      assert.equal(balance, 900);
+      return token.balanceOf(delivery.address);
+    }).then( (balance) => {
+      assert.equal(balance, 100);
       return delivery.approve();
-    }).then(() => {
-      token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 900));
-      token.balanceOf(accounts[1]).then( (balance) => assert.equal(balance, 33));
-      token.balanceOf(accounts[2]).then( (balance) => assert.equal(balance, 67));
-      token.balanceOf(delivery.address).then( (balance) => { assert.equal(balance, 0); done(); });
-    });
+    }).then( () => 
+      token.balanceOf(accounts[0])
+    ).then( (balance) => {
+      assert.equal(balance, 900);
+      return token.balanceOf(accounts[1]);
+    }).then( (balance) => {
+      assert.equal(balance, 33);
+      return token.balanceOf(accounts[2]);
+    }).then( (balance) => {
+      assert.equal(balance, 67);
+      return token.balanceOf(delivery.address);
+    }).then( (balance) => 
+      assert.equal(balance, 0)
+    );
   });
 });
 
 contract('DeliveryContract', function(accounts) {
 
-  before('Init contracts', () => { setup(accounts); });
+  before('Init contracts', (done) => { setup(accounts); done(); });
 
   it("should puts tokens in escrow and reimburse", () => {
-    token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 1000));
-    token.approve(delivery.address, 100) .then(() => {
-      token.allowance(accounts[0], delivery.address).then((allowance) => { assert.equal(allowance, 100); } );
-      return delivery.inviteParticipants([accounts[1]], [100])
-    }).then((balance) => {
-      token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 900));
-      token.balanceOf(delivery.address).then( (balance) => assert.equal(balance, 100));
+    token.grant(accounts[0], 1000)
+    .then( () =>
+      token.balanceOf(accounts[0])
+    ).then( (balance) => {
+      assert.equal(balance, 1000);
+      return token.approve(delivery.address, 100);
+    }).then(() => 
+      token.allowance(accounts[0], delivery.address)
+    ).then((allowance) => {
+      assert.equal(allowance, 100);
+      return delivery.inviteParticipants([accounts[1]], [100]);
+    }).then(() => 
+      token.balanceOf(accounts[0])
+    ).then( (balance) => {
+      assert.equal(balance, 900);
+      return token.balanceOf(delivery.address);
+    }).then( (balance) => {
+      assert.equal(balance, 100);
       return delivery.reimburse();
-    }).then(() => {
-      token.balanceOf(accounts[0]).then( (balance) => assert.equal(balance, 1000));
-      token.balanceOf(delivery.address).then( (balance) => assert.equal(balance, 0));
-    });
-  });
-
-  it("should grant balance", function() {
-    return token.grant(accounts[1], 1234).then(function(name) {
-      return token.balanceOf(accounts[1])
-    }).then((balance) => {
-      assert.equal(balance, 1234);
-    });
+    }).then( () => 
+      token.balanceOf(accounts[0])
+    ).then( (balance) => {
+      assert.equal(balance, 900);
+      return token.balanceOf(delivery.address);
+    }).then( (balance) => 
+      assert.equal(balance, 0)
+    );
   });
 
   it("should intialize name", function() {

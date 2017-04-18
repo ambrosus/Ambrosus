@@ -15,7 +15,7 @@ contract FoodToken is ERC20, SafeMath {
     
     function grant(address wallet, uint amount) {
       totalSupply += amount;
-      balances[wallet] += amount;
+      balances[wallet] = amount;
     }
 
 }

@@ -67,19 +67,20 @@ contract DeliveryContract is Assertive {
         foodToken = FoodToken(_foodTokenAddress);
     }
 
+    function setAttributes(bytes32 [] _identifers, int [] _mins, int [] _maxs) onlyOwner onlyStage(Stages.New) {
+      if (_identifers.length != _mins.length) throw;
+      if (_identifers.length != _maxs.length) throw;
+      for (uint i = 0; i < _identifers.length; i++) {
+        attributes.push(Attribute(_identifers[i], _mins[i], _maxs[i]));
+      }
+    }
+
     function inviteParticipants(address [] _parties, uint [] _amounts) onlyOwner returns (bool) {
       escrowed_amount = sum(_amounts);
       for (uint i = 0; i < _parties.length; i++) {
           parties.push(Party(_parties[i], _amounts[i]));
       }
       return foodToken.transferFrom(owner, this, escrowed_amount);
-    }
-
-    function sum(uint[] memory self) internal constant returns (uint r) {
-      r = self[0];
-      for (uint i = 1; i < self.length; i++) {
-        r += self[i];
-      }
     }
 
     function approve() onlyOwner {
@@ -95,18 +96,6 @@ contract DeliveryContract is Assertive {
       foodToken.transfer(owner, amount);
     }
 
-    function setAttributes(bytes32 [] _identifers, int [] _mins, int [] _maxs) {
-      if (_identifers.length != _mins.length) throw;
-      if (_identifers.length != _maxs.length) throw;
-      for (uint i = 0; i < _identifers.length; i++) {
-        attributes.push(Attribute(_identifers[i], _mins[i], _maxs[i]));
-      }
-    }
-
-    function getMetadata() constant returns (bytes32, bytes32) {
-        return (name, code);
-    }
-
     function reportMultiple(bytes32 [] _events, bytes32 [] _attributes, int [] _values, uint [] _timestamps, bytes32 [] _farmer_codes, bytes32 [] _batch_nos) {
         if (_events.length != _attributes.length) throw;
         if (_events.length != _values.length) throw;
@@ -116,6 +105,10 @@ contract DeliveryContract is Assertive {
         for (uint i = 0; i < _events.length; i++) {
             measurements.push(Measurement(_attributes[i], _values[i], _events[i], _timestamps[i], now, _farmer_codes[i], _batch_nos[i]));
         }
+    }
+
+    function getMetadata() constant returns (bytes32, bytes32) {
+        return (name, code);
     }
 
     function getAttributes() constant returns (bytes32 [], int [], int []) {
@@ -149,5 +142,12 @@ contract DeliveryContract is Assertive {
         }
         return (event_ids, attribute_ids, values, timestamps, block_timestamps, farmer_ids, batch_ids);
    }
+
+    function sum(uint[] memory self) internal constant returns (uint r) {
+      r = self[0];
+      for (uint i = 1; i < self.length; i++) {
+        r += self[i];
+      }
+    }
 
 }
