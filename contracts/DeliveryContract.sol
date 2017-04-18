@@ -5,7 +5,9 @@ import "./FoodToken.sol";
 contract DeliveryContract is Assertive {
 
     address owner;
+
     bytes32 public name;
+
     bytes32 public code;
 
     uint escrowed_amount;
@@ -101,7 +103,7 @@ contract DeliveryContract is Assertive {
       foodToken.transfer(owner, amount);
     }
 
-    function reportMultiple(bytes32 [] _events, bytes32 [] _attributes, int [] _values, uint [] _timestamps, bytes32 [] _farmer_codes, bytes32 [] _batch_nos) {
+    function addMeasurements(bytes32 [] _events, bytes32 [] _attributes, int [] _values, uint [] _timestamps, bytes32 [] _farmer_codes, bytes32 [] _batch_nos) {
         if (_events.length != _attributes.length) throw;
         if (_events.length != _values.length) throw;
         if (_events.length != _timestamps.length) throw;
@@ -110,10 +112,6 @@ contract DeliveryContract is Assertive {
         for (uint i = 0; i < _events.length; i++) {
             measurements.push(Measurement(_attributes[i], _values[i], _events[i], _timestamps[i], now, _farmer_codes[i], _batch_nos[i]));
         }
-    }
-
-    function getMetadata() constant returns (bytes32, bytes32) {
-        return (name, code);
     }
 
     function getAttributes() constant returns (bytes32 [], int [], int []) {
@@ -128,7 +126,7 @@ contract DeliveryContract is Assertive {
         return (identifers, mins, maxs);
     }
 
-    function getReports() constant returns (bytes32 [], bytes32 [], int [], uint [], uint [], bytes32 [], bytes32 []) {
+    function getMeasurements() constant returns (bytes32 [], bytes32 [], int [], uint [], uint [], bytes32 [], bytes32 []) {
         bytes32 [] memory attribute_ids = new bytes32[](measurements.length);
         int [] memory values = new int[](measurements.length);
         bytes32 [] memory event_ids = new bytes32[](measurements.length);
@@ -146,7 +144,7 @@ contract DeliveryContract is Assertive {
           batch_ids[i] = measurements[i].batch_id;
         }
         return (event_ids, attribute_ids, values, timestamps, block_timestamps, farmer_ids, batch_ids);
-   }
+    }
 
     function sum(uint[] memory self) internal constant returns (uint r) {
       r = self[0];
