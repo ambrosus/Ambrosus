@@ -18,7 +18,7 @@ function setup(accounts) {
 contract('DeliveryContract', function(accounts) {
   before('Init contracts', (done) => { setup(accounts); done(); });
 
-  it("should puts tokens in escrow and approve", () => {
+  it("should puts tokens in escrow and approve", (done) => {
     token.grant(accounts[0], 1000)
     .then( () =>
       token.balanceOf(accounts[0])
@@ -31,9 +31,15 @@ contract('DeliveryContract', function(accounts) {
     ).then( (allowance) => {
       assert.equal(allowance, 100);
       return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
-    }).then( (balance) => 
-      token.balanceOf(accounts[0])
-    ).then( (balance) => {
+    }).then(() => 
+      delivery.getParticipants()
+    ).then((p) => {
+      assert.equal(p[0][0], accounts[1]);
+      assert.equal(p[0][1], accounts[2]);
+      assert.equal(p[1][0].toNumber(), 33);
+      assert.equal(p[1][1].toNumber(), 67);
+      return token.balanceOf(accounts[0])
+    }).then( (balance) => {
       assert.equal(balance, 900);
       return token.balanceOf(delivery.address);
     }).then( (balance) => {
@@ -52,7 +58,7 @@ contract('DeliveryContract', function(accounts) {
       return token.balanceOf(delivery.address);
     }).then( (balance) => 
       assert.equal(balance, 0)
-    );
+    ).then(done);
   });
 });
 
@@ -60,7 +66,7 @@ contract('DeliveryContract', function(accounts) {
 
   before('Init contracts', (done) => { setup(accounts); done(); });
 
-  it("should puts tokens in escrow and reimburse", () => {
+  it("should puts tokens in escrow and reimburse", (done) => {
     token.grant(accounts[0], 1000)
     .then( () =>
       token.balanceOf(accounts[0])
@@ -83,52 +89,52 @@ contract('DeliveryContract', function(accounts) {
     }).then( () => 
       token.balanceOf(accounts[0])
     ).then( (balance) => {
-      assert.equal(balance, 900);
+      assert.equal(balance, 1000);
       return token.balanceOf(delivery.address);
     }).then( (balance) => 
       assert.equal(balance, 0)
-    );
+    ).then(done);
   });
 
-  it("should intialize name", function() {
-    return delivery.name().then(function(name) {
+  it("should intialize name", function(done) {
+    delivery.name().then(function(name) {
       assert.equal(testutils.byte32toAscii(name), "The Name");
-    });
+    }).then(done);
   });
 
-  it("should intialize code", function() {
-    return delivery.code().then(function(code) {
+  it("should intialize code", function(done) {
+    delivery.code().then(function(code) {
       assert.equal(testutils.byte32toAscii(code), "The Code");
-    });
+    }).then(done);
   });
 
-  it("should set attributes", function() {
-    return delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]).then(function(result) {
+  it("should set attributes", function(done) {
+    delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]).then(function(result) {
       return delivery.getAttributes();
     }).then(function(attributes) {
       assert.deepEqual(testutils.byte32ArraytoAsciiArray(attributes[0]), ["Volume", "Color"]);
       assert.deepEqual(attributes[1], [new BigNumber(22), new BigNumber(768)]);
       assert.deepEqual(attributes[2], [new BigNumber(24), new BigNumber(786)]);
-    })
+    }).then(done);
   });
 
-  it("set attributes should throw when arguments are arrays of different size", function() {
-    return testutils.expectedExceptionPromise(function () {
+  it("set attributes should throw when arguments are arrays of different size", function(done) {
+    testutils.expectedExceptionPromise(function () {
       return delivery.setAttributes.sendTransaction(["Volume", "Color"], [22], [21], {gas: 4000000});
-    }, 4000000);
+    }, 4000000).then(done);
   });
 
-  it("add measurements should throw when arguments are arrays of different size", function() {
-    return testutils.expectedExceptionPromise(function () {
-      return delivery.reportMultiple.sendTransaction(
+  it("add measurements should throw when arguments are arrays of different size", function(done) {
+    testutils.expectedExceptionPromise(function () {
+      return delivery.addMeasurements.sendTransaction(
         ["delivery", "shipping"], ["Volume", "Color"], [22], [1491848127,1491848135], ["fmr01", "fmr02"], ["bch01", "bch02"]
         , {gas: 4000000});
-    }, 4000000);
+    }, 4000000).then(done);
   });
 
-  it("should add measurements", function() {
-    return delivery.reportMultiple(["delivery", "shipping"], ["Volume", "Color"], [22, 777], [1491848127,1491848135], ["fmr01", "fmr02"], ["bch01", "bch02"]).then(function(instance) {
-      return delivery.getReports();
+  it("should add measurements", function(done) {
+    delivery.addMeasurements(["delivery", "shipping"], ["Volume", "Color"], [22, 777], [1491848127,1491848135], ["fmr01", "fmr02"], ["bch01", "bch02"]).then(function(instance) {
+      return delivery.getMeasurements();
     }).then(function(measurements) {
       let events = testutils.byte32ArraytoAsciiArray(measurements[0]);
       let attributes = testutils.byte32ArraytoAsciiArray(measurements[1]);
@@ -143,7 +149,7 @@ contract('DeliveryContract', function(accounts) {
       assert.deepEqual(timestamps, [1491848127,1491848135]);
       assert.deepEqual(farmer_codes, ["fmr01", "fmr02"]);
       assert.deepEqual(batch_nos, ["bch01", "bch02"]);
-    })
+    }).then(done);
   });
 
 });

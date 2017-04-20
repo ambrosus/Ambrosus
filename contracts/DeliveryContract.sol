@@ -1,4 +1,4 @@
-pragma solidity 0.4.8;
+pragma solidity ^0.4.8;
 
 import "./FoodToken.sol";
 
@@ -144,6 +144,16 @@ contract DeliveryContract is Assertive {
           batch_ids[i] = measurements[i].batch_id;
         }
         return (event_ids, attribute_ids, values, timestamps, block_timestamps, farmer_ids, batch_ids);
+    }
+
+    function getParticipants() constant returns (address [], uint []) {
+        address [] memory wallets = new address[](parties.length);
+        uint [] memory amounts = new uint[](parties.length);
+        for (uint i = 0; i < parties.length; i++) {
+          wallets[i] = parties[i].wallet;
+          amounts[i] = parties[i].amount;
+        }
+        return (wallets, amounts);
     }
 
     function sum(uint[] memory self) internal constant returns (uint r) {
