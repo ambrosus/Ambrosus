@@ -32,7 +32,7 @@ contract('DeliveryContract', function(accounts) {
         }).then(() => {
             return delivery.stage();
         }).then((result) => {
-            assert.equal(result["c"][0], 1);
+            assert.equal(result, 1);
         }).then(() => {
             return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
         }).then(() => {

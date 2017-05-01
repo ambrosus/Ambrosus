@@ -48,11 +48,14 @@ contract('DeliveryContract', function(accounts) {
             assert.equal(balance, 100);
             
             //Accept invitations as party 1.
-            return delivery.processInvite(0, true, {from: accounts[1]});
+            return delivery.processInvite(accounts[1], true, {from: accounts[1]});
         }).then(() => {
             // Accept invitation as party 2.
-            return delivery.processInvite(1, true, {from: accounts[2]});
+            return delivery.processInvite(accounts[2], true, {from: accounts[2]});
         }).then(() => {
+            return delivery.stage()
+        }).then((result) => {
+            assert.equal(result, 3);
             return delivery.approve();
         }).then( () => 
             token.balanceOf(accounts[0])

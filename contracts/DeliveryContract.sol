@@ -53,7 +53,8 @@ contract DeliveryContract is Assertive {
     Measurement [] measurements;
     
     Party [] parties;
-    uint party_no;
+    
+    mapping(address => uint) party_from_address;
 
     FoodToken public foodToken;
 
@@ -89,19 +90,17 @@ contract DeliveryContract is Assertive {
         escrowed_amount = sum(_amounts);
         for (uint i = 0; i < _parties.length; i++) {
             parties.push(Party(_parties[i], _amounts[i], false));
-            party_no += 1;
+            party_from_address[_parties[i]] = i;
         }
 
         return foodToken.transferFrom(owner, this, escrowed_amount);
     }
     
-    function processInvite(uint party_index, bool response) onlyStage(Stages.WaitingForParties) returns (uint)
-    {		
+    function processInvite(address _party, bool response) onlyStage(Stages.WaitingForParties) returns (uint)
+    {
         // Party doesn't exist -- overflow.
-        if(party_index + 1 > party_no)
-        {
-            throw;
-        }
+        uint party_index = party_from_address[_party];
+        if(party_index + 1 > parties.length) throw;
 
         // Is this the owner of the invite?
         if(msg.sender != parties[party_index].wallet)
@@ -122,7 +121,7 @@ contract DeliveryContract is Assertive {
             accepted_no += 1;
 
             // All accepted.
-            if(accepted_no == party_no)
+            if(accepted_no == parties.length)
             {
                 stage = Stages.InProgress;
             }
@@ -140,11 +139,7 @@ contract DeliveryContract is Assertive {
         stage = Stages.Complete;
     }
 
-    function reimburse() onlyOwner {
-        if (stage != Stages.Canceled && stage != Stages.InProgress && stage != Stages.WaitingForParties) {
-            throw;
-        }
-        
+    function reimburse() onlyOwner onlyStage(Stages.InProgress) {
         if (msg.sender != owner) throw;
         stage = Stages.Reimbursed;
         uint amount = escrowed_amount;
