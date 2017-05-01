@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/marekkirejczyk/foodtoken.svg?token=xjj4U84eSFwEsYLTc5Qe&branch=master)](https://travis-ci.com/marekkirejczyk/foodtoken)
+
 # Food Token
 
 Token contracts of the SSS Food Token contribution.
