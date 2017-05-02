@@ -123,6 +123,10 @@ contract('DeliveryContract', function(accounts) {
             assert.equal(testutils.byte32toAscii(code), "The Code");
         }).then(done);
     });
+    
+});
+
+contract('DeliveryContract', function(accounts) {
 
     it("should set attributes", function(done) {
         delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]).then(function(result) {

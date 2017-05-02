@@ -11,25 +11,23 @@ let delivery;
 let token;
 
 function setup(accounts) {
-  DeliveryContract.deployed().then((deployed) => delivery = deployed );
-  FoodToken.deployed().then((deployed) => token = deployed);
+    DeliveryContract.deployed().then((deployed) => delivery = deployed );
+    FoodToken.deployed().then((deployed) => token = deployed);
 }
 
 contract('DeliveryContract', function(accounts) {
     before('Init contracts', (done) => { setup(accounts); done(); });
 
-    it("should listen to state machine", (done) => {
-        delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67])
-        .then(() => {
-            return delivery.getParticipants()
-        }).then((result) => {
-            assert.equal(result[0].length, 0); // I.E. nothing was found [ [], [] ]
-        })
+    it("Throws an exception if invitingParticipants at wrong stage", (done) => {
+        testutils.expectedExceptionPromise(function () {
+            return delivery.inviteParticipants.sendTransaction([accounts[1], accounts[2]], [33, 67]
+                , {gas: 4000000});
+        }, 4000000).then(done);
+    });
 
-        // Test HasAttribute is enforced.
+    it("Advance stages", (done) => {
+        delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786])
         .then(() => {
-            return delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786])
-        }).then(() => {
             return delivery.stage();
         }).then((result) => {
             assert.equal(result, 1);
@@ -40,7 +38,6 @@ contract('DeliveryContract', function(accounts) {
         }).then((result) => {
             assert.equal(result[0][0], accounts[1]);
         }).then(done);
-
     });
 });
 
