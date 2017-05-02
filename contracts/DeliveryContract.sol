@@ -84,7 +84,7 @@ contract DeliveryContract is Assertive {
         }
     }
 
-    function inviteParticipants(address [] _parties, uint [] _amounts) onlyOwner onlyStage(Stages.HasAttributes) returns (bool)
+    function inviteParticipants(address [] _parties, uint [] _amounts) onlyOwner onlyStage(Stages.HasAttributes)
     {
         stage = Stages.WaitingForParties;
         escrowed_amount = sum(_amounts);
@@ -92,27 +92,16 @@ contract DeliveryContract is Assertive {
             parties.push(Party(_parties[i], _amounts[i], false));
             party_from_address[_parties[i]] = i;
         }
-
-        return foodToken.transferFrom(owner, this, escrowed_amount);
+        assert(foodToken.transferFrom(owner, this, escrowed_amount));
     }
     
     function processInvite(address _party, bool response) onlyStage(Stages.WaitingForParties) returns (uint)
     {
         // Party doesn't exist -- overflow.
         uint party_index = party_from_address[_party];
-        if(party_index + 1 > parties.length) throw;
-
-        // Is this the owner of the invite?
-        if(msg.sender != parties[party_index].wallet)
-        {
-            throw;
-        }
-
-        // They've already accepted.
-        if(parties[party_index].has_accepted)
-        {
-            throw;
-        }
+        assert(party_index < parties.length);
+        assert(msg.sender == parties[party_index].wallet);
+        assert(!parties[party_index].has_accepted);
 
         // User has accepted.
         if(response)
@@ -133,14 +122,13 @@ contract DeliveryContract is Assertive {
     }
 
     function approve() onlyOwner onlyStage(Stages.InProgress)  {
-        for (uint i = 0; i < parties.length; i++) {
-            foodToken.transfer(parties[i].wallet, parties[i].amount);
-        }
         stage = Stages.Complete;
+        for (uint i = 0; i < parties.length; i++) {
+            assert(foodToken.transfer(parties[i].wallet, parties[i].amount));
+        }
     }
 
     function reimburse() onlyOwner onlyStage(Stages.InProgress) {
-        if (msg.sender != owner) throw;
         stage = Stages.Reimbursed;
         uint amount = escrowed_amount;
         escrowed_amount = 0;
