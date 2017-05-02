@@ -1,0 +1,17 @@
+dist: trusty
+language: node_js
+node_js:
+  - "7"
+cache:
+  directories:
+    - node_modules
+before_script:
+  - npm install bignumber.js
+  - npm install -g ethereumjs-testrpc
+  - npm install -g truffle
+script:
+  - testrpc > testrpc.log &
+  - sleep 5
+  - truffle test
+after_script:
+  - cat testrpc.log
