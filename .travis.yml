@@ -6,6 +6,7 @@ cache:
   directories:
     - node_modules
 before_script:
+  - sudo apt-get install gcc make g++ build-essential python-dev libssl-dev
   - npm install bignumber.js
   - npm install -g ethereumjs-testrpc
   - npm install -g truffle
