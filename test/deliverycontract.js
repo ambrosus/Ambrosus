@@ -11,7 +11,7 @@ let delivery;
 let token;
 
 function setup(accounts) {
-    DeliveryContract.deployed("The Name", "The Code").then((deployed) => delivery = deployed );
+    DeliveryContract.deployed().then((deployed) => delivery = deployed );
     FoodToken.deployed().then((deployed) => token = deployed);
 }
 

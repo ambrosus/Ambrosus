@@ -35,7 +35,6 @@ contract('DeliveryContract', function(accounts) {
         }).then((result) => {
             assert.equal(result, 1);
         }).then(() => {
-
             return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
         }).then(() => {
             return delivery.getParticipants();
