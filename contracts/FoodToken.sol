@@ -56,8 +56,7 @@ contract FoodToken is ERC20, SafeMath {
         totalSupply = safeAdd(totalSupply, amount);
     }
     
-    function unlockBalance(address recipient)
-      // is_later_than(endTime + THAWING_DURATION)
+    function unlockBalance(address recipient) is_later_than(endTime + THAWING_DURATION)
     {
         balances[recipient] = safeAdd(balances[recipient], preallocatedBalances[recipient]);
         preallocatedBalances[recipient] = 0;

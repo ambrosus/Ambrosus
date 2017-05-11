@@ -20,6 +20,11 @@ contract Contribution is SafeMath {
       _;
   }
 
+  modifier is_earlier_than(uint x) {
+      assert(now < x);
+      _;
+  }
+
   function Contribution(uint _startTime) {
     startTime = _startTime;
     endTime = startTime + MAX_CONTRIBUTION_DURATION;
@@ -27,8 +32,8 @@ contract Contribution is SafeMath {
     foodToken.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
   }
   
-  function buy () payable external is_not_earlier_than(startTime) {
-
+  function buy () payable external is_not_earlier_than(startTime) is_earlier_than(endTime) {
+    
   }
 
 }

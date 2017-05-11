@@ -9,6 +9,8 @@ const BigNumber = require('bignumber.js');
 let contribution;
 let foodToken;
 
+
+
 contract('Contribiution', function(accounts) {
 
     const FOUNDER = "0x0000000000000000000000000000000000000001";
@@ -100,9 +102,34 @@ contract('Contribiution', function(accounts) {
             });
           })
         });
+
+        xit('Test unlocking too early', (done) => {
+            
+        });
+    });
+
+    describe('PAST END OF PUBLIC CONTRIBUTION', () => {
+        before('Time travel to endTime', (done) => {
+            testutils.increaseTime(endTime + 1, done);
+        });
+
+        it('Test buying too late', (done) => {
+          contribution.buy({ from: accounts[0], value: 1000 })
+          .catch(() => {
+            foodToken.balanceOf(accounts[0])
+            .then((result) => {
+                assert.equal(result.toNumber(), 0);
+                done();
+            });
+          })
+        });
     });
 
     describe('AFTER THAWING PERIOD', () => {
+        before('Time travel to endTime', (done) => {
+            testutils.increaseTime(endTime + (2 * years * 1.01), done);
+        });
+
         it ("unlock preallocated funds", (done) => {
             foodToken.balanceOf(FOUNDER_STAKE)
               .then((balance) => {
