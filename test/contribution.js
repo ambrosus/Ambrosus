@@ -14,19 +14,57 @@ contract('Contribiution', function(accounts) {
     const FOUNDER = "0x0000000000000000000000000000000000000001";
     const FOUNDER_STAKE = 1000;
 
+    const hours = 3600;
+    const weeks = 24 * 7 * hours;
+    const years = 52 * weeks;
+    
+    const startDelay = 1 * weeks;
+
+    let initalBlockTime;
     let startTime;
     let endTime;
 
-    before('Init contracts', (done) => { 
-        Contribution.deployed().then((deployed) => { 
-            contribution = deployed;
-            return contribution.foodToken()
-        }).then((address) => {
-            foodToken = FoodToken.at(address);
-        }).then(done);
+    it('Set startTime as now', (done) => {
+      web3.eth.getBlock('latest', (err, result) => {
+        initalBlockTime = result.timestamp;
+        startTime = initalBlockTime + startDelay;
+        endTime = startTime + (4 * weeks);
+        done();
+      });
     });
 
-    describe('DEPLOYMENT', () => {
+    describe('CONTRACT DEPLOYMENT', () => {
+        it('Deploy Contribution contracts', (done) => {
+          Contribution.new(startTime).then((result) => {
+            contribution = result;
+            return contribution.foodToken();
+          }).then((result) => {
+            foodToken = FoodToken.at(result);
+            done();
+          });
+        });
+
+        it('Check time initialisation', (done) => {
+          foodToken.startTime()
+          .then((result) => {
+            assert.equal(result, startTime);
+            return foodToken.endTime();
+          })
+          .then((result) => {
+            assert.equal(result, endTime);
+            return contribution.startTime();
+          })
+          .then((result) => {
+            assert.equal(result, startTime);
+            return contribution.endTime();
+          })
+          .then((result) => {
+            assert.equal(result, endTime);
+            done();
+          });
+
+        });
+
         it ("preallocated tokens", () => {
             foodToken.preallocatedBalanceOf(FOUNDER).then( (balance) => {
                 assert.equal(FOUNDER_STAKE, balance);

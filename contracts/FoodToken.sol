@@ -34,7 +34,9 @@ contract FoodToken is ERC20, SafeMath {
         _;
     }
 
-    function FoodToken() {
+    function FoodToken(uint _startTime, uint _endTime) {
+      startTime = _startTime;
+      endTime = _endTime;
       minter = msg.sender;
       totalSupply = 0;
     }
