@@ -62,7 +62,6 @@ contract('Contribiution', function(accounts) {
             assert.equal(result, endTime);
             done();
           });
-
         });
 
         it ("preallocated tokens", () => {
@@ -88,6 +87,19 @@ contract('Contribiution', function(accounts) {
             foodToken.preallocateToken.sendTransaction("0x0000000000000000000000000000000000000002", 2000, {gas: 4000000, from: Contribution.address});
         });
         xit ("can't allocate above limit");
+    });
+    
+    describe('BEFORE PUBLIC CONTRIBUTION', () => {
+        it('Test buying too early', (done) => {
+          contribution.buy({ from: accounts[0], value: 1000 })
+          .catch(() => {
+            foodToken.balanceOf(accounts[0])
+            .then((result) => {
+                assert.equal(result.toNumber(), 0);
+                done();
+            });
+          })
+        });
     });
 
     describe('AFTER THAWING PERIOD', () => {

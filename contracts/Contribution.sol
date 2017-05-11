@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 import "./FoodToken.sol";
 
-contract Contribution {
+contract Contribution is SafeMath {
 
   FoodToken public foodToken;
 
@@ -15,11 +15,20 @@ contract Contribution {
   uint public startTime;
   uint public endTime;
 
+  modifier is_not_earlier_than(uint x) {
+      assert(now >= x);
+      _;
+  }
+
   function Contribution(uint _startTime) {
     startTime = _startTime;
     endTime = startTime + MAX_CONTRIBUTION_DURATION;
     foodToken = new FoodToken(startTime, endTime);
     foodToken.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
+  }
+  
+  function buy () payable external is_not_earlier_than(startTime) {
+
   }
 
 }
