@@ -91,23 +91,21 @@ contract('Contribiution', function(accounts) {
             }, 4000000).then(done);
         });
 
-        xit ("can't allocate above limit");
+        xit ("can't preallocate above limit");
         xit ("minter preallocate tokens", () => {
             foodToken.preallocateToken.sendTransaction("0x0000000000000000000000000000000000000002", 2000, {gas: 4000000, from: Contribution.address});
         });
-        xit ("can't allocate above limit");
+
     });
     
     describe('BEFORE PUBLIC CONTRIBUTION', () => {
         it('Test buying too early', (done) => {
-          contribution.buy({ from: accounts[0], value: 1000 })
-          .catch(() => {
-            foodToken.balanceOf(accounts[0])
-            .then((result) => {
+            contribution.buy({ from: accounts[0], value: 1000 }).catch(() => {
+                return foodToken.balanceOf(accounts[0]);
+            }).then((result) => {
                 assert.equal(result.toNumber(), 0);
                 done();
             });
-          })
         });
 
         xit('Test unlocking too early', (done) => {
@@ -120,7 +118,22 @@ contract('Contribiution', function(accounts) {
             testutils.increaseTime(startTime, done);
         });
 
-        it('Test buying and buyingRecipient in time', (done) => {
+        xit('Test buying over limit fails', (done) => {
+            let balance;
+            foodToken.balanceOf(accounts[0]).then((_balance) => {
+                balance = _balance;
+            }).then(() => {
+                let amount = new BigNumber(10).toPower(18+7);
+                return contribution.buy({ from: accounts[1], value: amount});
+            }).then(() => {
+                return foodToken.balanceOf(accounts[0]);
+            }).then((result) => {
+                assert.equal(result.toNumber(), balance);
+                done();
+            });
+        });
+
+        it('Test buying in time', (done) => {
             contribution.buy({ from: accounts[0], value: 4000000});
             foodToken.balanceOf(accounts[0]).then((balance) => {
                 assert.equal(balance.toNumber(), 8800000);
@@ -128,12 +141,18 @@ contract('Contribiution', function(accounts) {
             });
         });
         
-        xit('Test buying over limit fails', (done) => {
-            
-        });
-
-        xit('Test minting liquid token from non-minter fails', (done) => {
-            
+        it('Test minting liquid token from non-minter fails', (done) => {
+            let balance;
+            foodToken.balanceOf(accounts[0]).then((_balance) => {
+                balance = _balance;
+            }).then(() => {
+                return foodToken.mintLiquidToken(accounts[1], 1000);
+            }).catch(() => {
+                return foodToken.balanceOf(accounts[0]);
+            }).then((result) => {
+                assert.equal(result.toNumber(), balance);
+                done();
+            });
         });
     });
 
@@ -147,13 +166,13 @@ contract('Contribiution', function(accounts) {
           foodToken.balanceOf(accounts[0]).then((_balance) => {
               balance = _balance;
           }).then( () => {
-              contribution.buy({ from: accounts[0], value: 1000 }).catch(() => {
-                  foodToken.balanceOf(accounts[0]).then((result) => {
-                      assert.equal(result.toNumber(), balance);
-                      done();
-                  });
-              });
-          })
+              return contribution.buy({ from: accounts[0], value: 1000 });
+          }).catch(() => {
+              return foodToken.balanceOf(accounts[0]);
+          }).then((result) => {
+              assert.equal(result.toNumber(), balance);
+              done();
+          });
         });
     });
 
