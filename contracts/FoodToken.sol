@@ -10,7 +10,7 @@ contract FoodToken is ERC20, SafeMath {
     string public constant symbol = "FOOD";
     uint public constant decimals = 18;
     uint public constant THAWING_DURATION = 2 years;
-    uint public constant MAX_TOTAL_TOKEN_AMOUNT = 1000000 * 10 ** decimals;
+    uint public constant MAX_TOTAL_TOKEN_AMOUNT_OFFERED_TO_PUBLIC = 1000000 * 10 ** decimals; // Max amount of tokens offered to the public
 
     // Only changed in constructor
     uint public startTime; // Contribution start time in seconds
@@ -30,7 +30,7 @@ contract FoodToken is ERC20, SafeMath {
     }
 
     modifier max_total_token_amount_not_reached(uint amount) {
-        assert(safeAdd(totalSupply, amount) <= MAX_TOTAL_TOKEN_AMOUNT);
+        assert(safeAdd(totalSupply, amount) <= MAX_TOTAL_TOKEN_AMOUNT_OFFERED_TO_PUBLIC);
         _;
     }
 
@@ -45,7 +45,6 @@ contract FoodToken is ERC20, SafeMath {
       totalSupply += amount;
       balances[wallet] = amount;
     }
-
 
     function preallocateToken(address recipient, uint amount)
         external
@@ -64,6 +63,15 @@ contract FoodToken is ERC20, SafeMath {
 
     function preallocatedBalanceOf(address _owner) constant returns (uint balance) {
         return preallocatedBalances[_owner];
+    }
+
+    function mintLiquidToken(address recipient, uint amount)
+        external
+        only_minter
+        max_total_token_amount_not_reached(amount)
+    {
+        balances[recipient] = safeAdd(balances[recipient], amount);
+        totalSupply = safeAdd(totalSupply, amount);
     }
 
 }

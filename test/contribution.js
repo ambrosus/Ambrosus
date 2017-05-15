@@ -19,8 +19,15 @@ contract('Contribiution', function(accounts) {
     const hours = 3600;
     const weeks = 24 * 7 * hours;
     const years = 52 * weeks;
-    
+
+    const PRICE_RATE_FIRST = 2200;
+    const PRICE_RATE_SECOND = 2150;
+    const PRICE_RATE_THIRD = 2100;
+    const PRICE_RATE_FOURTH = 2050;
+
     const startDelay = 1 * weeks;
+    
+    const sss = accounts[9]
 
     let initalBlockTime;
     let startTime;
@@ -37,7 +44,7 @@ contract('Contribiution', function(accounts) {
 
     describe('CONTRACT DEPLOYMENT', () => {
         it('Deploy Contribution contracts', (done) => {
-          Contribution.new(startTime).then((result) => {
+          Contribution.new(startTime, sss).then((result) => {
             contribution = result;
             return contribution.foodToken();
           }).then((result) => {
@@ -49,7 +56,7 @@ contract('Contribiution', function(accounts) {
         it('Check time initialisation', (done) => {
           foodToken.startTime()
           .then((result) => {
-            assert.equal(result, startTime);
+            assert.equal(startTime, result);
             return foodToken.endTime();
           })
           .then((result) => {
@@ -108,19 +115,44 @@ contract('Contribiution', function(accounts) {
         });
     });
 
+    describe('START OF PUBLIC CONTRIBUTION', () => {
+        before('Time travel to startTime', (done) => {
+            testutils.increaseTime(startTime, done);
+        });
+
+        it('Test buying and buyingRecipient in time', (done) => {
+            contribution.buy({ from: accounts[0], value: 4000000});
+            foodToken.balanceOf(accounts[0]).then((balance) => {
+                assert.equal(balance.toNumber(), 8800000);
+                done();
+            });
+        });
+        
+        xit('Test buying over limit fails', (done) => {
+            
+        });
+
+        xit('Test minting liquid token from non-minter fails', (done) => {
+            
+        });
+    });
+
     describe('PAST END OF PUBLIC CONTRIBUTION', () => {
         before('Time travel to endTime', (done) => {
             testutils.increaseTime(endTime + 1, done);
         });
 
         it('Test buying too late', (done) => {
-          contribution.buy({ from: accounts[0], value: 1000 })
-          .catch(() => {
-            foodToken.balanceOf(accounts[0])
-            .then((result) => {
-                assert.equal(result.toNumber(), 0);
-                done();
-            });
+          let balance;
+          foodToken.balanceOf(accounts[0]).then((_balance) => {
+              balance = _balance;
+          }).then( () => {
+              contribution.buy({ from: accounts[0], value: 1000 }).catch(() => {
+                  foodToken.balanceOf(accounts[0]).then((result) => {
+                      assert.equal(result.toNumber(), balance);
+                      done();
+                  });
+              });
           })
         });
     });
