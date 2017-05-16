@@ -73,4 +73,11 @@ contract FoodToken is ERC20, SafeMath {
         totalSupply = safeAdd(totalSupply, amount);
     }
 
+    function transfer(address _to, uint256 _value) 
+      is_later_than(endTime)
+      returns (bool success) 
+    {
+      return super.transfer(_to, _value);
+    }
+
 }

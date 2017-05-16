@@ -79,23 +79,6 @@ contract('Contribiution', function(accounts) {
             })
         });
 
-        it ("non-minter can't preallocate tokens", (done) => {
-            testutils.expectedExceptionPromise( () => {
-                return foodToken.preallocateToken.sendTransaction(FOUNDER, FOUNDER_STAKE, {gas: 4000000});
-            }, 4000000).then(done);
-        });
-        
-        it ("can't unlock prealoccated funds", (done) => {
-            testutils.expectedExceptionPromise( () => {
-                return foodToken.unlockBalance.sendTransaction(FOUNDER, {gas: 4000000});
-            }, 4000000).then(done);
-        });
-
-        xit ("can't preallocate above limit");
-        xit ("minter preallocate tokens", () => {
-            foodToken.preallocateToken.sendTransaction("0x0000000000000000000000000000000000000002", 2000, {gas: 4000000, from: Contribution.address});
-        });
-
     });
     
     describe('BEFORE PUBLIC CONTRIBUTION', () => {
@@ -106,6 +89,23 @@ contract('Contribiution', function(accounts) {
                 assert.equal(result.toNumber(), 0);
                 done();
             });
+        });
+
+        it ("non-minter can't preallocate tokens", (done) => {
+            testutils.expectedExceptionPromise( () => {
+                return foodToken.preallocateToken.sendTransaction(FOUNDER, FOUNDER_STAKE, {gas: 4000000});
+            }, 4000000).then(done);
+        });
+        
+        it ("can't unlock preallocated funds", (done) => {
+            testutils.expectedExceptionPromise( () => {
+                return foodToken.unlockBalance.sendTransaction(FOUNDER, {gas: 4000000});
+            }, 4000000).then(done);
+        });
+
+        xit ("can't preallocate above limit");
+        xit ("minter preallocate tokens", () => {
+            foodToken.preallocateToken.sendTransaction("0x0000000000000000000000000000000000000002", 2000, {gas: 4000000, from: Contribution.address});
         });
     });
 
@@ -130,8 +130,9 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test buying in time', (done) => {
-            contribution.buy({ from: accounts[0], value: 4000000});
-            foodToken.balanceOf(accounts[0]).then((balance) => {
+            contribution.buy({ from: accounts[0], value: 4000000}).then( () => {
+                return foodToken.balanceOf(accounts[0]);
+            }).then((balance) => {
                 assert.equal(balance.toNumber(), 8800000);
                 done();
             });
@@ -165,6 +166,17 @@ contract('Contribiution', function(accounts) {
             });
         });
 
+        it('Test token transfer too early', (done) => {
+            foodToken.transfer(accounts[1], 1000, {from: accounts[0]}).catch((r) => {
+                return foodToken.balanceOf(accounts[1]).then((result) => {
+                    assert.equal(result.toNumber(), 0);
+                    done();
+                });
+            });
+        });
+
+        xit('Test token transferFrom too early', (done) => {
+        });
     });
 
     describe('PAST END OF PUBLIC CONTRIBUTION', () => {
@@ -185,6 +197,12 @@ contract('Contribiution', function(accounts) {
               done();
           });
         });
+
+        xit('Test token transfer in time', (done) => {
+        });
+        xit('Test token transferFrom in time', (done) => {
+        });
+
     });
 
     describe('AFTER THAWING PERIOD', () => {
