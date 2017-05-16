@@ -49,7 +49,6 @@ contract FoodToken is ERC20, SafeMath {
     function preallocateToken(address recipient, uint amount)
         external
         only_minter
-        max_total_token_amount_not_reached(amount)
     {
         preallocatedBalances[recipient] = safeAdd(preallocatedBalances[recipient], amount);
         totalSupply = safeAdd(totalSupply, amount);

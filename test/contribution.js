@@ -107,10 +107,6 @@ contract('Contribiution', function(accounts) {
                 done();
             });
         });
-
-        xit('Test unlocking too early', (done) => {
-            
-        });
     });
 
     describe('START OF PUBLIC CONTRIBUTION', () => {
@@ -140,7 +136,7 @@ contract('Contribiution', function(accounts) {
                 done();
             });
         });
-        
+
         it('Test minting liquid token from non-minter fails', (done) => {
             let balance;
             foodToken.balanceOf(accounts[0]).then((_balance) => {
@@ -154,6 +150,21 @@ contract('Contribiution', function(accounts) {
                 done();
             });
         });
+
+        it ("test unlocking too early", (done) => {
+            let balance;
+            foodToken.balanceOf(FOUNDER_STAKE).then((_balance) => {
+                balance = _balance;
+            }).then(() => {
+                return foodToken.unlockBalance(FOUNDER);
+            }).catch((reason) => {
+                foodToken.balanceOf(FOUNDER_STAKE).then((result) => {
+                    assert.equal(result.toNumber(), balance);
+                    done();
+                });
+            });
+        });
+
     });
 
     describe('PAST END OF PUBLIC CONTRIBUTION', () => {
