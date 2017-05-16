@@ -175,7 +175,18 @@ contract('Contribiution', function(accounts) {
             });
         });
 
-        xit('Test token transferFrom too early', (done) => {
+        it('Test token transferFrom too early', (done) => {
+            foodToken.approve(accounts[1], 1000).then( () => {
+                return foodToken.allowance(accounts[0], accounts[1], 1000);
+            }).then((allowed) => {
+                assert.equal(allowed, 1000);
+                return foodToken.transferFrom(accounts[0], accounts[1], 1000, {from: accounts[1]});
+            }).catch((r) => {
+                return foodToken.balanceOf(accounts[1]).then((result) => {
+                    assert.equal(result.toNumber(), 0);
+                    done();
+                });
+            });
         });
     });
 
@@ -198,9 +209,37 @@ contract('Contribiution', function(accounts) {
           });
         });
 
-        xit('Test token transfer in time', (done) => {
+        it('Test token transfer in time', (done) => {
+            let balance;
+            foodToken.balanceOf(accounts[1]).then((_balance) => {
+                balance = _balance.toNumber();
+            }).then( () => {
+                return foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
+            }).then(() => {
+                return foodToken.balanceOf(accounts[1]);
+            }).then((result) => {
+                assert.equal(balance + 1000, result);
+                done();
+            });
         });
-        xit('Test token transferFrom in time', (done) => {
+
+        it('Test token transferFrom in time', (done) => {
+            let balance;
+            foodToken.balanceOf(accounts[1]).then((_balance) => {
+                balance = _balance.toNumber();
+            }).then( () => {
+                foodToken.approve(accounts[1], 1000);
+            }).then( () => {
+                return foodToken.allowance(accounts[0], accounts[1], 1000);
+            }).then((allowed) => {
+                assert.equal(allowed, 1000);
+                return foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
+            }).then(() => {
+                return foodToken.balanceOf(accounts[1]);
+            }).then((result) => {
+                assert.equal(balance + 1000, result);
+                done();
+            });
         });
 
     });
