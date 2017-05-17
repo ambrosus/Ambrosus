@@ -1,5 +1,6 @@
 "use strict";
 
+const Contribution = artifacts.require("./Contribution.sol");
 const DeliveryContract = artifacts.require("./DeliveryContract.sol");
 const FoodToken = artifacts.require("./FoodToken.sol");
 const assert = require('assert');
@@ -7,35 +8,44 @@ const testutils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
 
 let delivery;
-
+let contribution;
 let token;
 
-function setup(accounts) {
-    DeliveryContract.deployed().then((deployed) => delivery = deployed );
-    FoodToken.deployed().then((deployed) => token = deployed);
+function setup(accounts, done) {
+    let startTime;
+    let endTime;
+    web3.eth.getBlock('earliest', (err, result) => {
+        startTime = result.timestamp;
+        endTime = startTime;
+        FoodToken.new(startTime, endTime).then((result) => {
+            token = result;
+            return DeliveryContract.new("The Name", "The Code", token.address);
+        }).then((result) => {
+          delivery = result;
+          done();
+        });
+    });
 }
 
 contract('DeliveryContract', function(accounts) {
-    before('Init contracts', (done) => { setup(accounts); done(); });
+    before('Init contracts', (done) => { setup(accounts, done); });
 
     it("should puts tokens in escrow and approve", (done) => {
-        token.grant(accounts[0], 1000)
-        .then( () =>
-            token.balanceOf(accounts[0])
-        ).then( (balance) => 
-            assert.equal(balance, 1000)
-        ).then( () =>
-            token.approve(delivery.address, 100)
-        ).then( () => 
-            token.allowance(accounts[0], delivery.address) 
-        ).then( (allowance) => {
+        token.mintLiquidToken(accounts[0], 1000).then( () => {
+            return token.balanceOf(accounts[0]);
+        }).then( (balance) => {
+            assert.equal(balance, 1000);
+            token.approve(delivery.address, 100);
+        }).then( () => {
+            return token.allowance(accounts[0], delivery.address) 
+        }).then( (allowance) => {
             assert.equal(allowance, 100);
-            return delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]);
+            delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]);
         }).then(() => {
-            return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
-        }).then(() => 
-            delivery.getParticipants()
-        ).then((p) => {
+            delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67], {gas: 4000000});
+        }).then(() => {
+            return delivery.getParticipants()
+        }).then((p) => {
             assert.equal(p[0][0], accounts[1]);
             assert.equal(p[0][1], accounts[2]);
             assert.equal(p[1][0].toNumber(), 33);
@@ -74,18 +84,18 @@ contract('DeliveryContract', function(accounts) {
     });
 });
 
+
 contract('DeliveryContract', function(accounts) {
 
-    before('Init contracts', (done) => { setup(accounts); done(); });
+    before('Init contracts', (done) => { setup(accounts, done); });
 
     it("should puts tokens in escrow and reimburse", (done) => {
-        delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786])
-        .then( () => {
-            return token.grant(accounts[0], 1000);
-        }).then( () => {
+        token.mintLiquidToken(accounts[0], 1000).then( () => {
             return token.balanceOf(accounts[0])
         }).then( (balance) => {
             assert.equal(balance, 1000);
+            return delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]);
+        }).then( () => {
             return token.approve(delivery.address, 100);
         }).then(() => 
             token.allowance(accounts[0], delivery.address)
@@ -127,6 +137,8 @@ contract('DeliveryContract', function(accounts) {
 });
 
 contract('DeliveryContract', function(accounts) {
+
+    before('Init contracts', (done) => { setup(accounts, done); });
 
     it("should set attributes", function(done) {
         delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]).then(function(result) {

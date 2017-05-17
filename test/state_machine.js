@@ -10,13 +10,24 @@ let delivery;
 
 let token;
 
-function setup(accounts) {
-    DeliveryContract.deployed().then((deployed) => delivery = deployed );
-    FoodToken.deployed().then((deployed) => token = deployed);
+function setup(accounts, done) {
+    let startTime;
+    let endTime;
+    web3.eth.getBlock('earliest', (err, result) => {
+        startTime = result.timestamp;
+        endTime = startTime;
+        FoodToken.new(startTime, endTime).then((result) => {
+            token = result;
+            return DeliveryContract.new("The Name", "The Code", token.address);
+        }).then((result) => {
+          delivery = result;
+          done();
+        });
+    });
 }
 
 contract('DeliveryContract', function(accounts) {
-    before('Init contracts', (done) => { setup(accounts); done(); });
+    before('Init contracts', (done) => { setup(accounts, done);  });
 
     it("Throws an exception if invitingParticipants at wrong stage", (done) => {
         testutils.expectedExceptionPromise(function () {
@@ -26,7 +37,7 @@ contract('DeliveryContract', function(accounts) {
     });
 
     it("Advance stages", (done) => {
-        token.grant(accounts[0], 1000).then( () => {
+        token.mintLiquidToken(accounts[0], 1000).then( () => {
             delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786])
         }).then(() => {
             token.approve(delivery.address, 1000);
