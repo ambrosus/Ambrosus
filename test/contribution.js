@@ -138,6 +138,37 @@ contract('Contribiution', function(accounts) {
             });
         });
 
+        it('Test halting by non-sss account', (done) => {
+            contribution.halt().catch((e) => {
+                return contribution.halted();
+            }).then((halt) => {
+                assert.equal(halt, false);
+                done();
+            });
+        });
+
+        it('Test buying with halted account', (done) => {
+            contribution.halt({from: sss}).then(() => {
+                contribution.buy({ from: accounts[0], value: 4000000}).catch( () => {
+                        contribution.halted().then((halt) => {
+                            assert.equal(halt, true);
+                            return foodToken.balanceOf(accounts[0]);
+                        }).then((balance) => {
+                            assert.equal(balance.toNumber(), 8800000);
+                            contribution.unhalt({from: sss})
+                        }).then(() => {
+                            contribution.buy({ from: accounts[0], value: 4000000})
+                        }).then(() => {
+                            return foodToken.balanceOf(accounts[0]);
+                        }).then((balance) => {
+                            assert.equal(balance.toNumber(), 17600000);
+                            done();
+                        });
+                });
+            });
+        });
+
+
         it('Test minting liquid token from non-minter fails', (done) => {
             let balance;
             foodToken.balanceOf(accounts[0]).then((_balance) => {

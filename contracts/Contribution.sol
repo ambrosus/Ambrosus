@@ -18,6 +18,13 @@ contract Contribution is SafeMath {
 
   uint public startTime;
   uint public endTime;
+  
+  bool public halted;
+  
+  modifier is_not_halted {
+      assert(!halted);
+      _;
+  }
 
   modifier is_not_earlier_than(uint x) {
       assert(now >= x);
@@ -47,7 +54,11 @@ contract Contribution is SafeMath {
     return PRICE_RATE_FIRST;
   }
 
-  function buy () payable external is_not_earlier_than(startTime) is_earlier_than(endTime) {
+  function buy () payable external 
+    is_not_earlier_than(startTime) 
+    is_earlier_than(endTime) 
+    is_not_halted
+  {
     uint amount = safeMul(msg.value, PRICE_RATE_FIRST) / DIVISOR_PRICE;
     foodToken.mintLiquidToken(msg.sender, amount);
     assert(sss.send(msg.value));
@@ -55,6 +66,14 @@ contract Contribution is SafeMath {
   
   function setSSSAddress(address _sss) only_sss { 
     sss = _sss; 
+  }
+  
+  function halt() only_sss { 
+    halted = true; 
+  }
+
+  function unhalt() only_sss { 
+    halted = false; 
   }
 
 }
