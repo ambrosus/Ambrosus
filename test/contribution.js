@@ -102,31 +102,11 @@ contract('Contribiution', function(accounts) {
                 return foodToken.unlockBalance.sendTransaction(FOUNDER, {gas: 4000000});
             }, 4000000).then(done);
         });
-
-        xit ("can't preallocate above limit");
-        xit ("minter preallocate tokens", () => {
-            foodToken.preallocateToken.sendTransaction("0x0000000000000000000000000000000000000002", 2000, {gas: 4000000, from: Contribution.address});
-        });
     });
 
     describe('START OF PUBLIC CONTRIBUTION', () => {
         before('Time travel to startTime', (done) => {
             testutils.increaseTime(startTime, done);
-        });
-
-        xit('Test buying over limit fails', (done) => {
-            let balance;
-            foodToken.balanceOf(accounts[0]).then((_balance) => {
-                balance = _balance;
-            }).then(() => {
-                let amount = new BigNumber(10).toPower(18+7);
-                return contribution.buy({ from: accounts[1], value: amount});
-            }).then(() => {
-                return foodToken.balanceOf(accounts[0]);
-            }).then((result) => {
-                assert.equal(result.toNumber(), balance);
-                done();
-            });
         });
 
         it('Test buying in time', (done) => {
@@ -155,9 +135,9 @@ contract('Contribiution', function(accounts) {
                             return foodToken.balanceOf(accounts[0]);
                         }).then((balance) => {
                             assert.equal(balance.toNumber(), 8800000);
-                            contribution.unhalt({from: sss})
+                            return contribution.unhalt({from: sss});
                         }).then(() => {
-                            contribution.buy({ from: accounts[0], value: 4000000})
+                            return contribution.buy({ from: accounts[0], value: 4000000});
                         }).then(() => {
                             return foodToken.balanceOf(accounts[0]);
                         }).then((balance) => {
@@ -167,7 +147,6 @@ contract('Contribiution', function(accounts) {
                 });
             });
         });
-
 
         it('Test minting liquid token from non-minter fails', (done) => {
             let balance;
@@ -319,7 +298,7 @@ contract('Contribiution', function(accounts) {
         it('Test changing minter address in Token Contract', (done) => {
             FoodToken.new(startTime, endTime).then( (_foodToken) => {
                 foodToken = _foodToken;
-                foodToken.setMinterAddress(accounts[1]);
+                return foodToken.setMinterAddress(accounts[1]);
             }).then(() => {
                 return foodToken.minter();
             }).then((result) => {

@@ -41,6 +41,9 @@ contract Contribution is SafeMath {
       _;
   }
 
+  event TokensBought(address indexed sender, uint eth, uint amount);
+
+
   function Contribution(uint _startTime, address _sss) {
     sss = _sss;
     startTime = _startTime;
@@ -62,6 +65,7 @@ contract Contribution is SafeMath {
     uint amount = safeMul(msg.value, PRICE_RATE_FIRST) / DIVISOR_PRICE;
     foodToken.mintLiquidToken(msg.sender, amount);
     assert(sss.send(msg.value));
+    TokensBought(msg.sender, msg.value, amount);
   }
   
   function setSSSAddress(address _sss) only_sss { 

@@ -27,20 +27,21 @@ function setup(accounts, done) {
     });
 }
 
+
 contract('DeliveryContract', function(accounts) {
-    before('Init contracts', (done) => { setup(accounts, done); });
+    before('Init contracts 1', (done) => { setup(accounts, done); });
 
     it("should puts tokens in escrow and approve", (done) => {
         token.mintLiquidToken(accounts[0], 1000).then( () => {
             return token.balanceOf(accounts[0]);
         }).then( (balance) => {
             assert.equal(balance, 1000);
-            token.approve(delivery.address, 100);
+            return token.approve(delivery.address, 100);
         }).then( () => {
             return token.allowance(accounts[0], delivery.address) 
         }).then( (allowance) => {
             assert.equal(allowance, 100);
-            delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]);
+            return delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]);
         }).then(() => {
             delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67], {gas: 4000000});
         }).then(() => {
@@ -56,7 +57,6 @@ contract('DeliveryContract', function(accounts) {
             return token.balanceOf(delivery.address);
         }).then( (balance) => {
             assert.equal(balance, 100);
-            
             //Accept invitations as party 1.
             return delivery.processInvite(accounts[1], true, {from: accounts[1]});
         }).then(() => {
@@ -87,7 +87,7 @@ contract('DeliveryContract', function(accounts) {
 
 contract('DeliveryContract', function(accounts) {
 
-    before('Init contracts', (done) => { setup(accounts, done); });
+    before('Init contracts 2', (done) => { setup(accounts, done); });
 
     it("should puts tokens in escrow and reimburse", (done) => {
         token.mintLiquidToken(accounts[0], 1000).then( () => {
@@ -138,7 +138,7 @@ contract('DeliveryContract', function(accounts) {
 
 contract('DeliveryContract', function(accounts) {
 
-    before('Init contracts', (done) => { setup(accounts, done); });
+    before('Init contracts 3', (done) => { setup(accounts, done); });
 
     it("should set attributes", function(done) {
         delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]).then(function(result) {
