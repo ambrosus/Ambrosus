@@ -266,4 +266,45 @@ contract('Contribiution', function(accounts) {
         });
     });
 
+    describe('ADMINISTRATIVE', () => {
+        it('Test changing SSS address in Contribution Contract', (done) => {
+          contribution.setSSSAddress(accounts[1], { from: sss })
+          .then(() => contribution.sss())
+          .then((result) => {
+            assert.equal(result, accounts[1]);
+            done();
+          });
+        });
+
+        it("Test changing SSS address in Contribution Contract by non-sss", (done) => {
+            contribution.setSSSAddress(accounts[2]).catch(() => {
+                contribution.sss().then((result) => {
+                    assert.notEqual(result, accounts[2]);
+                    done();
+                });
+            });
+        });
+
+        it('Test changing minter address in Token Contract', (done) => {
+            FoodToken.new(startTime, endTime).then( (_foodToken) => {
+                foodToken = _foodToken;
+                foodToken.setMinterAddress(accounts[1]);
+            }).then(() => {
+                return foodToken.minter();
+            }).then((result) => {
+                assert.equal(result, accounts[1]);
+                done();
+          });
+        });
+
+        it("Test changing minter address in Token Contract by non-sss", (done) => {
+            foodToken.setMinterAddress(accounts[2]).catch(() => {
+                foodToken.minter().then((result) => {
+                    assert.notEqual(result, accounts[2]);
+                    done();
+                });
+            });
+        });
+
+    });
 });

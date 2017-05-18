@@ -84,4 +84,7 @@ contract FoodToken is ERC20, SafeMath {
       return super.transferFrom(_from, _to, _value);
     }
 
+    function setMinterAddress(address _minter) only_minter {
+      minter = _minter;
+    }
 }

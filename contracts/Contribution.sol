@@ -28,6 +28,11 @@ contract Contribution is SafeMath {
       assert(now < x);
       _;
   }
+  
+  modifier only_sss() {
+      assert(msg.sender == sss);
+      _;
+  }
 
   function Contribution(uint _startTime, address _sss) {
     sss = _sss;
@@ -35,6 +40,7 @@ contract Contribution is SafeMath {
     endTime = startTime + MAX_CONTRIBUTION_DURATION;
     foodToken = new FoodToken(startTime, endTime);
     foodToken.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
+    // TODO Preallocate all tokens
   }
 
   function priceRate() constant returns (uint) {
@@ -45,6 +51,10 @@ contract Contribution is SafeMath {
     uint amount = safeMul(msg.value, PRICE_RATE_FIRST) / DIVISOR_PRICE;
     foodToken.mintLiquidToken(msg.sender, amount);
     assert(sss.send(msg.value));
+  }
+  
+  function setSSSAddress(address _sss) only_sss { 
+    sss = _sss; 
   }
 
 }
