@@ -36,3 +36,29 @@ exports.expectedExceptionPromise = function (action, gasToUse) {
       }
     });
 };
+
+exports.send = function(method, params, callback) {
+  if (typeof params === 'function') {
+    callback = params;
+    params = [];
+  }
+
+  web3.currentProvider.sendAsync({
+    jsonrpc: '2.0',
+    method,
+    params: params || [],
+    id: new Date().getTime(),
+  }, callback);
+}
+
+exports.increaseTime = function(time_shift, done) {
+    web3.eth.getBlock('latest', (err, result) => {
+      this.send('evm_increaseTime', [time_shift - result.timestamp], (err, result) => {
+        assert.equal(err, null);
+        this.send('evm_mine', [], (err, result) => {
+          assert.equal(err, null);
+          done();
+        });
+      });
+    });
+}

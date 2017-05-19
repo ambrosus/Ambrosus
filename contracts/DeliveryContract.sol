@@ -84,8 +84,11 @@ contract DeliveryContract is Assertive {
         }
     }
 
-    function inviteParticipants(address [] _parties, uint [] _amounts) onlyOwner onlyStage(Stages.HasAttributes)
+    function inviteParticipants(address [] _parties, uint [] _amounts) 
+        onlyOwner
+        onlyStage(Stages.HasAttributes)
     {
+
         stage = Stages.WaitingForParties;
         escrowed_amount = sum(_amounts);
         for (uint i = 0; i < _parties.length; i++) {
