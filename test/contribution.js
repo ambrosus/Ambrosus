@@ -3,17 +3,16 @@
 const FoodToken = artifacts.require("./FoodToken.sol");
 const Contribution = artifacts.require("./Contribution.sol");
 const assert = require('assert');
-const testutils = require("./testutils.js");
+const testUtils = require("./testUtils.js");
 const BigNumber = require('bignumber.js');
 
 let contribution;
 let foodToken;
 
-
-
 contract('Contribiution', function(accounts) {
 
     const FOUNDER = "0x0000000000000000000000000000000000000001";
+    const NON_FOUNDER = "0x0000000000000000000000000000000000000069";
     const FOUNDER_STAKE = 1000;
 
     const hours = 3600;
@@ -43,14 +42,9 @@ contract('Contribiution', function(accounts) {
     });
 
     describe('CONTRACT DEPLOYMENT', () => {
-        it('Deploy Contribution contracts', (done) => {
-          Contribution.new(startTime, sss).then((result) => {
-            contribution = result;
-            return contribution.foodToken();
-          }).then((result) => {
-            foodToken = FoodToken.at(result);
-            done();
-          });
+        it('Deploy Contribution contracts', async () => {
+          contribution = await Contribution.new(startTime, sss);
+          foodToken = FoodToken.at(await contribution.foodToken());
         });
 
         it('Check time initialisation', async () => {
@@ -67,32 +61,42 @@ contract('Contribiution', function(accounts) {
 
     });
     
+
     describe('BEFORE PUBLIC CONTRIBUTION', () => {
         it('Test buying too early', (done) => {
-            contribution.buy({ from: accounts[0], value: 1000 }).catch(() => {
-                return foodToken.balanceOf(accounts[0]);
-            }).then((result) => {
-                assert.equal(result.toNumber(), 0);
-                done();
+            testUtils.assertThrows(() => {
+              return contribution.buy({ from: accounts[0], value: 1000 })
+            }).then(async () => {
+              var balance = await foodToken.balanceOf(accounts[0]);
+              assert.equal(balance.toNumber(), 0);
+              done();
             });
         });
 
         it ("non-minter can't preallocate tokens", (done) => {
-            testutils.expectedExceptionPromise( () => {
-                return foodToken.preallocateToken.sendTransaction(FOUNDER, FOUNDER_STAKE, {gas: 4000000});
-            }, 4000000).then(done);
+            testUtils.assertThrows(() => {
+              return foodToken.preallocateToken(NON_FOUNDER, FOUNDER_STAKE);
+            }).then(async () => {
+              var balance = await foodToken.preallocatedBalanceOf(NON_FOUNDER);
+              assert.equal(balance.toNumber(), 0);
+              done();
+            });
         });
         
         it ("can't unlock preallocated funds", (done) => {
-            testutils.expectedExceptionPromise( () => {
-                return foodToken.unlockBalance.sendTransaction(FOUNDER, {gas: 4000000});
-            }, 4000000).then(done);
+          testUtils.assertThrows(() => {
+            return foodToken.unlockBalance(FOUNDER);
+          }).then(async () => {
+            var balance = await foodToken.balanceOf(FOUNDER);
+            assert.equal(balance.toNumber(), 0);
+            done();
+          });
         });
     });
 
     describe('START OF PUBLIC CONTRIBUTION', () => {
         before('Time travel to startTime', (done) => {
-            testutils.increaseTime(startTime, done);
+            testUtils.increaseTime(startTime, done);
         });
 
         it('Test buying in time', async () => {
@@ -185,7 +189,7 @@ contract('Contribiution', function(accounts) {
 
     describe('PAST END OF PUBLIC CONTRIBUTION', () => {
         before('Time travel to endTime', (done) => {
-            testutils.increaseTime(endTime + 1, done);
+            testUtils.increaseTime(endTime + 1, done);
         });
 
         it('Test buying too late', (done) => {
@@ -223,7 +227,7 @@ contract('Contribiution', function(accounts) {
 
     describe('AFTER THAWING PERIOD', () => {
         before('Time travel to endTime', (done) => {
-            testutils.increaseTime(endTime + (2 * years * 1.01), done);
+            testUtils.increaseTime(endTime + (2 * years * 1.01), done);
         });
 
         it ("unlock preallocated funds", async () => {

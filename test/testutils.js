@@ -62,3 +62,11 @@ exports.increaseTime = function(time_shift, done) {
       });
     });
 }
+
+exports.assertThrows = function(body) {
+  return new Promise( (resolve, reject) => {
+    body()
+    .then( () => { assert.fail(false,true, "Expected to throw an exception."); })
+    .catch( () => { resolve(); });
+  });
+}
