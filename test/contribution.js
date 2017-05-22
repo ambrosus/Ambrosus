@@ -249,13 +249,12 @@ contract('Contribiution', function(accounts) {
           assert.equal(await contribution.sss(), accounts[1]);
         });
 
-        it("Test changing SSS address in Contribution Contract by non-sss", (done) => {
-            contribution.setSSSAddress(accounts[2]).catch(() => {
-                contribution.sss().then((result) => {
-                    assert.notEqual(result, accounts[2]);
-                    done();
-                });
-            });
+        it("Test changing SSS address in Contribution Contract by non-sss", async () => {
+            try {
+              await contribution.setSSSAddress(accounts[2]);
+            } catch (e) {
+              assert.notEqual(await contribution.sss(), accounts[2]);
+            }
         });
 
         it('Test changing minter address in Token Contract', async () => {
@@ -264,13 +263,12 @@ contract('Contribiution', function(accounts) {
             assert.equal(await foodToken.minter(), accounts[1]);
         });
 
-        it("Test changing minter address in Token Contract by non-sss", (done) => {
-            foodToken.setMinterAddress(accounts[2]).catch(() => {
-                foodToken.minter().then((result) => {
-                    assert.notEqual(result, accounts[2]);
-                    done();
-                });
-            });
+        it("Test changing minter address in Token Contract by non-sss", async () => {
+            try {
+              await foodToken.setMinterAddress(accounts[2]);
+            } catch (e) {
+              assert.notEqual(await foodToken.minter(), accounts[2]);
+            }
         });
 
     });
