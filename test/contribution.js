@@ -3,7 +3,7 @@
 const FoodToken = artifacts.require("./FoodToken.sol");
 const Contribution = artifacts.require("./Contribution.sol");
 const assert = require('assert');
-const testUtils = require("./testUtils.js");
+const testUtils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
 
 let contribution;
