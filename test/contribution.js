@@ -3,17 +3,16 @@
 const FoodToken = artifacts.require("./FoodToken.sol");
 const Contribution = artifacts.require("./Contribution.sol");
 const assert = require('assert');
-const testutils = require("./testutils.js");
+const testUtils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
 
 let contribution;
 let foodToken;
 
-
-
 contract('Contribiution', function(accounts) {
 
     const FOUNDER = "0x0000000000000000000000000000000000000001";
+    const NON_FOUNDER = "0x0000000000000000000000000000000000000069";
     const FOUNDER_STAKE = 1000;
 
     const hours = 3600;
@@ -43,79 +42,67 @@ contract('Contribiution', function(accounts) {
     });
 
     describe('CONTRACT DEPLOYMENT', () => {
-        it('Deploy Contribution contracts', (done) => {
-          Contribution.new(startTime, sss).then((result) => {
-            contribution = result;
-            return contribution.foodToken();
-          }).then((result) => {
-            foodToken = FoodToken.at(result);
-            done();
-          });
+        it('Deploy Contribution contracts', async () => {
+          contribution = await Contribution.new(startTime, sss);
+          foodToken = FoodToken.at(await contribution.foodToken());
         });
 
-        it('Check time initialisation', (done) => {
-          foodToken.startTime()
-          .then((result) => {
-            assert.equal(startTime, result);
-            return foodToken.endTime();
-          })
-          .then((result) => {
-            assert.equal(result, endTime);
-            return contribution.startTime();
-          })
-          .then((result) => {
-            assert.equal(result, startTime);
-            return contribution.endTime();
-          })
-          .then((result) => {
-            assert.equal(result, endTime);
-            done();
-          });
+        it('Check time initialisation', async () => {
+          assert.equal(startTime, await foodToken.startTime());
+          assert.equal(endTime, await foodToken.endTime());
+          assert.equal(startTime, await contribution.startTime());
+          assert.equal(endTime, await contribution.endTime());
         });
 
-        it ("preallocated tokens", () => {
-            foodToken.preallocatedBalanceOf(FOUNDER).then( (balance) => {
-                assert.equal(FOUNDER_STAKE, balance);
-            })
+        it ("preallocated tokens", async () => {
+            var balance = await foodToken.preallocatedBalanceOf(FOUNDER)
+            assert.equal(FOUNDER_STAKE, balance);
         });
 
     });
     
+
     describe('BEFORE PUBLIC CONTRIBUTION', () => {
         it('Test buying too early', (done) => {
-            contribution.buy({ from: accounts[0], value: 1000 }).catch(() => {
-                return foodToken.balanceOf(accounts[0]);
-            }).then((result) => {
-                assert.equal(result.toNumber(), 0);
-                done();
+            testUtils.assertThrows(() => {
+              return contribution.buy({ from: accounts[0], value: 1000 })
+            }).then(async () => {
+              var balance = await foodToken.balanceOf(accounts[0]);
+              assert.equal(balance.toNumber(), 0);
+              done();
             });
         });
 
         it ("non-minter can't preallocate tokens", (done) => {
-            testutils.expectedExceptionPromise( () => {
-                return foodToken.preallocateToken.sendTransaction(FOUNDER, FOUNDER_STAKE, {gas: 4000000});
-            }, 4000000).then(done);
+            testUtils.assertThrows(() => {
+              return foodToken.preallocateToken(NON_FOUNDER, FOUNDER_STAKE);
+            }).then(async () => {
+              var balance = await foodToken.preallocatedBalanceOf(NON_FOUNDER);
+              assert.equal(balance.toNumber(), 0);
+              done();
+            });
         });
         
         it ("can't unlock preallocated funds", (done) => {
-            testutils.expectedExceptionPromise( () => {
-                return foodToken.unlockBalance.sendTransaction(FOUNDER, {gas: 4000000});
-            }, 4000000).then(done);
+          testUtils.assertThrows(() => {
+            return foodToken.unlockBalance(FOUNDER);
+          }).then(async () => {
+            var balance = await foodToken.balanceOf(FOUNDER);
+            assert.equal(balance.toNumber(), 0);
+            done();
+          });
         });
     });
 
     describe('START OF PUBLIC CONTRIBUTION', () => {
         before('Time travel to startTime', (done) => {
-            testutils.increaseTime(startTime, done);
+            testUtils.increaseTime(startTime, done);
         });
 
-        it('Test buying in time', (done) => {
-            contribution.buy({ from: accounts[0], value: 4000000}).then( () => {
-                return foodToken.balanceOf(accounts[0]);
-            }).then((balance) => {
-                assert.equal(balance.toNumber(), 8800000);
-                done();
-            });
+        it('Test buying in time', async () => {
+            await contribution.buy({ from: accounts[0], value: 4000000});
+            var balance = await foodToken.balanceOf(accounts[0]);
+            assert.equal(balance.toNumber(), 8800000);
         });
 
         it('Test halting by non-sss account', (done) => {
@@ -202,7 +189,7 @@ contract('Contribiution', function(accounts) {
 
     describe('PAST END OF PUBLIC CONTRIBUTION', () => {
         before('Time travel to endTime', (done) => {
-            testutils.increaseTime(endTime + 1, done);
+            testUtils.increaseTime(endTime + 1, done);
         });
 
         it('Test buying too late', (done) => {
@@ -219,101 +206,69 @@ contract('Contribiution', function(accounts) {
           });
         });
 
-        it('Test token transfer in time', (done) => {
-            let balance;
-            foodToken.balanceOf(accounts[1]).then((_balance) => {
-                balance = _balance.toNumber();
-            }).then( () => {
-                return foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
-            }).then(() => {
-                return foodToken.balanceOf(accounts[1]);
-            }).then((result) => {
-                assert.equal(balance + 1000, result);
-                done();
-            });
+        it('Test token transfer in time', async () => {
+            let expectedBalance = (await foodToken.balanceOf(accounts[1])).toNumber() + 1000;
+            await foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
+            assert.equal(expectedBalance, await foodToken.balanceOf(accounts[1]));
         });
 
-        it('Test token transferFrom in time', (done) => {
-            let balance;
-            foodToken.balanceOf(accounts[1]).then((_balance) => {
-                balance = _balance.toNumber();
-            }).then( () => {
-                foodToken.approve(accounts[1], 1000);
-            }).then( () => {
-                return foodToken.allowance(accounts[0], accounts[1], 1000);
-            }).then((allowed) => {
-                assert.equal(allowed, 1000);
-                return foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
-            }).then(() => {
-                return foodToken.balanceOf(accounts[1]);
-            }).then((result) => {
-                assert.equal(balance + 1000, result);
-                done();
-            });
+        it('Test token transferFrom in time', async () => {
+            let expectedBalance = (await foodToken.balanceOf(accounts[1])).toNumber() + 1000;
+            await foodToken.approve(accounts[1], 1000);
+
+            var allowed = await foodToken.allowance(accounts[0], accounts[1], 1000);
+            assert.equal(allowed, 1000);
+
+            await foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
+            assert.equal(expectedBalance, await foodToken.balanceOf(accounts[1]));
         });
 
     });
 
     describe('AFTER THAWING PERIOD', () => {
         before('Time travel to endTime', (done) => {
-            testutils.increaseTime(endTime + (2 * years * 1.01), done);
+            testUtils.increaseTime(endTime + (2 * years * 1.01), done);
         });
 
-        it ("unlock preallocated funds", (done) => {
-            foodToken.balanceOf(FOUNDER_STAKE)
-              .then((balance) => {
-                assert.equal(0, balance);
-                return foodToken.unlockBalance(FOUNDER);
-            }).then( () => {
-                return foodToken.preallocatedBalanceOf(FOUNDER);
-            }).then( (balance) => {
-                assert.equal(0, balance);
-            }).then( () => {
-                return foodToken.balanceOf(FOUNDER);
-            }).then( (balance) => {
-                assert.equal(FOUNDER_STAKE, balance);
-            }).then(done);
+        it ("unlock preallocated funds", async () => {
+          var balance = await foodToken.balanceOf(FOUNDER_STAKE);
+          assert.equal(0, balance);
+
+          await foodToken.unlockBalance(FOUNDER);
+          balance = await foodToken.preallocatedBalanceOf(FOUNDER);
+          assert.equal(0, balance);
+
+          balance = await foodToken.balanceOf(FOUNDER);
+          assert.equal(FOUNDER_STAKE, balance);
         });
     });
 
     describe('ADMINISTRATIVE', () => {
-        it('Test changing SSS address in Contribution Contract', (done) => {
-          contribution.setSSSAddress(accounts[1], { from: sss })
-          .then(() => contribution.sss())
-          .then((result) => {
-            assert.equal(result, accounts[1]);
-            done();
-          });
+        it('Test changing SSS address in Contribution Contract', async () => {
+          await contribution.setSSSAddress(accounts[1], { from: sss })
+          assert.equal(await contribution.sss(), accounts[1]);
         });
 
-        it("Test changing SSS address in Contribution Contract by non-sss", (done) => {
-            contribution.setSSSAddress(accounts[2]).catch(() => {
-                contribution.sss().then((result) => {
-                    assert.notEqual(result, accounts[2]);
-                    done();
-                });
-            });
+        it("Test changing SSS address in Contribution Contract by non-sss", async () => {
+            try {
+              await contribution.setSSSAddress(accounts[2]);
+            } catch (e) {
+              assert.notEqual(await contribution.sss(), accounts[2]);
+            }
         });
 
-        it('Test changing minter address in Token Contract', (done) => {
-            FoodToken.new(startTime, endTime).then( (_foodToken) => {
-                foodToken = _foodToken;
-                return foodToken.setMinterAddress(accounts[1]);
-            }).then(() => {
-                return foodToken.minter();
-            }).then((result) => {
-                assert.equal(result, accounts[1]);
-                done();
-          });
+        it('Test changing minter address in Token Contract', async () => {
+            var foodToken = await FoodToken.new(startTime, endTime);
+            await foodToken.setMinterAddress(accounts[1]);
+            assert.equal(await foodToken.minter(), accounts[1]);
         });
 
-        it("Test changing minter address in Token Contract by non-sss", (done) => {
-            foodToken.setMinterAddress(accounts[2]).catch(() => {
-                foodToken.minter().then((result) => {
-                    assert.notEqual(result, accounts[2]);
-                    done();
-                });
-            });
+        it("Test changing minter address in Token Contract by non-sss", async () => {
+            try {
+              await foodToken.setMinterAddress(accounts[2]);
+            } catch (e) {
+              assert.notEqual(await foodToken.minter(), accounts[2]);
+            }
         });
 
     });
