@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 import "./FoodToken.sol";
 
-contract DeliveryContract is Assertive {
+contract DeliveryContract {
 
     address owner;
 

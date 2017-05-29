@@ -259,7 +259,7 @@ contract('Contribiution', function(accounts) {
 
         it('Test changing minter address in Token Contract', async () => {
             var foodToken = await FoodToken.new(startTime, endTime);
-            foodToken.setMinterAddress(accounts[1]);
+            await foodToken.setMinterAddress(accounts[1]);
             assert.equal(await foodToken.minter(), accounts[1]);
         });
 
