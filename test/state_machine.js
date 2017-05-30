@@ -10,24 +10,20 @@ let delivery;
 
 let token;
 
-function setup(accounts, done) {
+async function setup(accounts, done) {
     let startTime;
     let endTime;
-    web3.eth.getBlock('earliest', (err, result) => {
+    web3.eth.getBlock('earliest', async (err, result) => {
         startTime = result.timestamp;
-        endTime = startTime;
-        FoodCoin.new(startTime, endTime).then((result) => {
-            token = result;
-            return DeliveryContract.new("The Name", "The Code", token.address);
-        }).then((result) => {
-          delivery = result;
-          done();
-        });
+        endTime = startTime;        
+        token = await FoodCoin.new(startTime, endTime)
+        delivery = await DeliveryContract.new("The Name", "The Code", token.address);
+        done();
     });
 }
 
 contract('DeliveryContract', function(accounts) {
-    before('Init contracts', (done) => { setup(accounts, done);  });
+    before('Init contracts', (done) => { setup(accounts, done); });
 
     it("Throws an exception if invitingParticipants at wrong stage", (done) => {
         testutils.expectedExceptionPromise(function () {
@@ -36,22 +32,14 @@ contract('DeliveryContract', function(accounts) {
         }, 4000000).then(done);
     });
 
-    it("Advance stages", (done) => {
-        token.mintLiquidToken(accounts[0], 1000).then( () => {
-            delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786])
-        }).then(() => {
-            token.approve(delivery.address, 1000);
-        }).then((result) => {
-            return delivery.stage();
-        }).then((result) => {
-            assert.equal(result, 1);
-        }).then(() => {
-            return delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
-        }).then(() => {
-            return delivery.getParticipants();
-        }).then((result) => {
-            assert.equal(result[0][0], accounts[1]);
-        }).then(done);
+    it("Advance stages", async () => {
+        await token.mintLiquidToken(accounts[0], 1000);
+        await delivery.setAttributes(["Volume", "Color"], [22, 768], [24, 786]);
+        await token.approve(delivery.address, 1000);
+        assert.equal(await delivery.stage(), 1);
+        await delivery.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
+        var result = await delivery.getParticipants();
+        assert.equal(result[0][0], accounts[1]);
     });
 });
 
