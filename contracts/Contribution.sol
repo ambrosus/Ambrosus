@@ -1,10 +1,10 @@
 pragma solidity ^0.4.8;
 
-import "./FoodToken.sol";
+import "./FoodCoin.sol";
 
 contract Contribution is SafeMath {
 
-  FoodToken public foodToken;
+  FoodCoin public foodCoin;
   address public sss;
 
   uint public constant MAX_CONTRIBUTION_DURATION = 4 weeks;
@@ -48,8 +48,8 @@ contract Contribution is SafeMath {
     sss = _sss;
     startTime = _startTime;
     endTime = startTime + MAX_CONTRIBUTION_DURATION;
-    foodToken = new FoodToken(startTime, endTime);
-    foodToken.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
+    foodCoin = new FoodCoin(startTime, endTime);
+    foodCoin.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
     // TODO Preallocate all tokens
   }
 
@@ -63,7 +63,7 @@ contract Contribution is SafeMath {
     is_not_halted
   {
     uint amount = safeMul(msg.value, PRICE_RATE_FIRST) / DIVISOR_PRICE;
-    foodToken.mintLiquidToken(msg.sender, amount);
+    foodCoin.mintLiquidToken(msg.sender, amount);
     assert(sss.send(msg.value));
     TokensBought(msg.sender, msg.value, amount);
   }

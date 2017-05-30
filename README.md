@@ -3,7 +3,7 @@
 # FoodCoin
 
 This repository contains smart contracts building FoodCoin protocol, in particular:
-- FoodToken - ERC20 Token representing FoodCoin
+- FoodCoin - ERC20 Token representing FoodCoin
 - Contribution contract
 - Delivery Contract, which is a stub for Food Blockchain XYZ protocol to be developed in near future.
 

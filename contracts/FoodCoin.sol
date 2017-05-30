@@ -3,7 +3,7 @@ pragma solidity ^0.4.8;
 import "./dependencies/SafeMath.sol";
 import "./dependencies/ERC20.sol";
 
-contract FoodToken is ERC20, SafeMath {
+contract FoodCoin is ERC20, SafeMath {
 
     // Constants
     string public constant name = "Food Token";
@@ -34,7 +34,7 @@ contract FoodToken is ERC20, SafeMath {
         _;
     }
 
-    function FoodToken(uint _startTime, uint _endTime) {
+    function FoodCoin(uint _startTime, uint _endTime) {
       startTime = _startTime;
       endTime = _endTime;
       minter = msg.sender;

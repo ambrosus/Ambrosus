@@ -1,7 +1,7 @@
 "use strict";
 
 const DeliveryContract = artifacts.require("./DeliveryContract.sol");
-const FoodToken = artifacts.require("./FoodToken.sol");
+const FoodCoin = artifacts.require("./FoodCoin.sol");
 const assert = require('assert');
 const testutils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
@@ -16,7 +16,7 @@ function setup(accounts, done) {
     web3.eth.getBlock('earliest', (err, result) => {
         startTime = result.timestamp;
         endTime = startTime;
-        FoodToken.new(startTime, endTime).then((result) => {
+        FoodCoin.new(startTime, endTime).then((result) => {
             token = result;
             return DeliveryContract.new("The Name", "The Code", token.address);
         }).then((result) => {

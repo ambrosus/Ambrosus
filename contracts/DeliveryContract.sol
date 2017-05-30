@@ -1,6 +1,6 @@
 pragma solidity ^0.4.8;
 
-import "./FoodToken.sol";
+import "./FoodCoin.sol";
 
 contract DeliveryContract {
 
@@ -56,7 +56,7 @@ contract DeliveryContract {
     
     mapping(address => uint) party_from_address;
 
-    FoodToken public foodToken;
+    FoodCoin public foodCoin;
 
     modifier onlyOwner {
         assert(msg.sender == owner);
@@ -68,11 +68,11 @@ contract DeliveryContract {
         _;
     }
 
-    function DeliveryContract(bytes32 _name, bytes32 _code, address _foodTokenAddress) {
+    function DeliveryContract(bytes32 _name, bytes32 _code, address _foodCoinAddress) {
         owner = msg.sender;
         name = _name;
         code = _code;
-        foodToken = FoodToken(_foodTokenAddress);
+        foodCoin = FoodCoin(_foodCoinAddress);
     }
 
     function setAttributes(bytes32 [] _identifers, int [] _mins, int [] _maxs) onlyOwner onlyStage(Stages.New) {
@@ -95,7 +95,7 @@ contract DeliveryContract {
             parties.push(Party(_parties[i], _amounts[i], false));
             party_from_address[_parties[i]] = i;
         }
-        assert(foodToken.transferFrom(owner, this, escrowed_amount));
+        assert(foodCoin.transferFrom(owner, this, escrowed_amount));
     }
     
     function processInvite(address _party, bool response) onlyStage(Stages.WaitingForParties) returns (uint)
@@ -127,7 +127,7 @@ contract DeliveryContract {
     function approve() onlyOwner onlyStage(Stages.InProgress)  {
         stage = Stages.Complete;
         for (uint i = 0; i < parties.length; i++) {
-            assert(foodToken.transfer(parties[i].wallet, parties[i].amount));
+            assert(foodCoin.transfer(parties[i].wallet, parties[i].amount));
         }
     }
 
@@ -135,7 +135,7 @@ contract DeliveryContract {
         stage = Stages.Reimbursed;
         uint amount = escrowed_amount;
         escrowed_amount = 0;
-        foodToken.transfer(owner, amount);
+        foodCoin.transfer(owner, amount);
     }
 
     function addMeasurements(bytes32 [] _events, bytes32 [] _attributes, int [] _values, uint [] _timestamps, bytes32 [] _farmer_codes, bytes32 [] _batch_nos) {

@@ -1,10 +1,10 @@
 var DeliveryContract = artifacts.require("./DeliveryContract.sol");
-var FoodToken = artifacts.require("./FoodToken.sol");
+var FoodCoin = artifacts.require("./FoodCoin.sol");
 var Contribution = artifacts.require("./Contribution.sol");
 
 module.exports = function(deployer) {
     deployer.deploy(Contribution);
-    deployer.deploy(FoodToken).then(function() {
-        return deployer.deploy(DeliveryContract, "The Name", "The Code", FoodToken.address);
+    deployer.deploy(FoodCoin).then(function() {
+        return deployer.deploy(DeliveryContract, "The Name", "The Code", FoodCoin.address);
     });
 };

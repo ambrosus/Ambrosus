@@ -1,13 +1,13 @@
 "use strict";
 
-const FoodToken = artifacts.require("./FoodToken.sol");
+const FoodCoin = artifacts.require("./FoodCoin.sol");
 const Contribution = artifacts.require("./Contribution.sol");
 const assert = require('assert');
 const testUtils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
 
 let contribution;
-let foodToken;
+let foodCoin;
 
 contract('Contribiution', function(accounts) {
 
@@ -44,18 +44,18 @@ contract('Contribiution', function(accounts) {
     describe('CONTRACT DEPLOYMENT', () => {
         it('Deploy Contribution contracts', async () => {
           contribution = await Contribution.new(startTime, sss);
-          foodToken = FoodToken.at(await contribution.foodToken());
+          foodCoin = FoodCoin.at(await contribution.foodCoin());
         });
 
         it('Check time initialisation', async () => {
-          assert.equal(startTime, await foodToken.startTime());
-          assert.equal(endTime, await foodToken.endTime());
+          assert.equal(startTime, await foodCoin.startTime());
+          assert.equal(endTime, await foodCoin.endTime());
           assert.equal(startTime, await contribution.startTime());
           assert.equal(endTime, await contribution.endTime());
         });
 
         it ("preallocated tokens", async () => {
-            var balance = await foodToken.preallocatedBalanceOf(FOUNDER)
+            var balance = await foodCoin.preallocatedBalanceOf(FOUNDER)
             assert.equal(FOUNDER_STAKE, balance);
         });
 
@@ -67,7 +67,7 @@ contract('Contribiution', function(accounts) {
             testUtils.assertThrows(() => {
               return contribution.buy({ from: accounts[0], value: 1000 })
             }).then(async () => {
-              var balance = await foodToken.balanceOf(accounts[0]);
+              var balance = await foodCoin.balanceOf(accounts[0]);
               assert.equal(balance.toNumber(), 0);
               done();
             });
@@ -75,9 +75,9 @@ contract('Contribiution', function(accounts) {
 
         it ("non-minter can't preallocate tokens", (done) => {
             testUtils.assertThrows(() => {
-              return foodToken.preallocateToken(NON_FOUNDER, FOUNDER_STAKE);
+              return foodCoin.preallocateToken(NON_FOUNDER, FOUNDER_STAKE);
             }).then(async () => {
-              var balance = await foodToken.preallocatedBalanceOf(NON_FOUNDER);
+              var balance = await foodCoin.preallocatedBalanceOf(NON_FOUNDER);
               assert.equal(balance.toNumber(), 0);
               done();
             });
@@ -85,9 +85,9 @@ contract('Contribiution', function(accounts) {
         
         it ("can't unlock preallocated funds", (done) => {
           testUtils.assertThrows(() => {
-            return foodToken.unlockBalance(FOUNDER);
+            return foodCoin.unlockBalance(FOUNDER);
           }).then(async () => {
-            var balance = await foodToken.balanceOf(FOUNDER);
+            var balance = await foodCoin.balanceOf(FOUNDER);
             assert.equal(balance.toNumber(), 0);
             done();
           });
@@ -101,7 +101,7 @@ contract('Contribiution', function(accounts) {
 
         it('Test buying in time', async () => {
             await contribution.buy({ from: accounts[0], value: 4000000});
-            var balance = await foodToken.balanceOf(accounts[0]);
+            var balance = await foodCoin.balanceOf(accounts[0]);
             assert.equal(balance.toNumber(), 8800000);
         });
 
@@ -119,14 +119,14 @@ contract('Contribiution', function(accounts) {
                 contribution.buy({ from: accounts[0], value: 4000000}).catch( () => {
                         contribution.halted().then((halt) => {
                             assert.equal(halt, true);
-                            return foodToken.balanceOf(accounts[0]);
+                            return foodCoin.balanceOf(accounts[0]);
                         }).then((balance) => {
                             assert.equal(balance.toNumber(), 8800000);
                             return contribution.unhalt({from: sss});
                         }).then(() => {
                             return contribution.buy({ from: accounts[0], value: 4000000});
                         }).then(() => {
-                            return foodToken.balanceOf(accounts[0]);
+                            return foodCoin.balanceOf(accounts[0]);
                         }).then((balance) => {
                             assert.equal(balance.toNumber(), 17600000);
                             done();
@@ -137,12 +137,12 @@ contract('Contribiution', function(accounts) {
 
         it('Test minting liquid token from non-minter fails', (done) => {
             let balance;
-            foodToken.balanceOf(accounts[0]).then((_balance) => {
+            foodCoin.balanceOf(accounts[0]).then((_balance) => {
                 balance = _balance;
             }).then(() => {
-                return foodToken.mintLiquidToken(accounts[1], 1000);
+                return foodCoin.mintLiquidToken(accounts[1], 1000);
             }).catch(() => {
-                return foodToken.balanceOf(accounts[0]);
+                return foodCoin.balanceOf(accounts[0]);
             }).then((result) => {
                 assert.equal(result.toNumber(), balance);
                 done();
@@ -151,12 +151,12 @@ contract('Contribiution', function(accounts) {
 
         it ("test unlocking too early", (done) => {
             let balance;
-            foodToken.balanceOf(FOUNDER_STAKE).then((_balance) => {
+            foodCoin.balanceOf(FOUNDER_STAKE).then((_balance) => {
                 balance = _balance;
             }).then(() => {
-                return foodToken.unlockBalance(FOUNDER);
+                return foodCoin.unlockBalance(FOUNDER);
             }).catch((reason) => {
-                foodToken.balanceOf(FOUNDER_STAKE).then((result) => {
+                foodCoin.balanceOf(FOUNDER_STAKE).then((result) => {
                     assert.equal(result.toNumber(), balance);
                     done();
                 });
@@ -164,8 +164,8 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test token transfer too early', (done) => {
-            foodToken.transfer(accounts[1], 1000, {from: accounts[0]}).catch((r) => {
-                return foodToken.balanceOf(accounts[1]).then((result) => {
+            foodCoin.transfer(accounts[1], 1000, {from: accounts[0]}).catch((r) => {
+                return foodCoin.balanceOf(accounts[1]).then((result) => {
                     assert.equal(result.toNumber(), 0);
                     done();
                 });
@@ -173,13 +173,13 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test token transferFrom too early', (done) => {
-            foodToken.approve(accounts[1], 1000).then( () => {
-                return foodToken.allowance(accounts[0], accounts[1], 1000);
+            foodCoin.approve(accounts[1], 1000).then( () => {
+                return foodCoin.allowance(accounts[0], accounts[1], 1000);
             }).then((allowed) => {
                 assert.equal(allowed, 1000);
-                return foodToken.transferFrom(accounts[0], accounts[1], 1000, {from: accounts[1]});
+                return foodCoin.transferFrom(accounts[0], accounts[1], 1000, {from: accounts[1]});
             }).catch((r) => {
-                return foodToken.balanceOf(accounts[1]).then((result) => {
+                return foodCoin.balanceOf(accounts[1]).then((result) => {
                     assert.equal(result.toNumber(), 0);
                     done();
                 });
@@ -194,12 +194,12 @@ contract('Contribiution', function(accounts) {
 
         it('Test buying too late', (done) => {
           let balance;
-          foodToken.balanceOf(accounts[0]).then((_balance) => {
+          foodCoin.balanceOf(accounts[0]).then((_balance) => {
               balance = _balance;
           }).then( () => {
               return contribution.buy({ from: accounts[0], value: 1000 });
           }).catch(() => {
-              return foodToken.balanceOf(accounts[0]);
+              return foodCoin.balanceOf(accounts[0]);
           }).then((result) => {
               assert.equal(result.toNumber(), balance);
               done();
@@ -207,20 +207,20 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test token transfer in time', async () => {
-            let expectedBalance = (await foodToken.balanceOf(accounts[1])).toNumber() + 1000;
-            await foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
-            assert.equal(expectedBalance, await foodToken.balanceOf(accounts[1]));
+            let expectedBalance = (await foodCoin.balanceOf(accounts[1])).toNumber() + 1000;
+            await foodCoin.transfer(accounts[1], 1000, {from: accounts[0]});
+            assert.equal(expectedBalance, await foodCoin.balanceOf(accounts[1]));
         });
 
         it('Test token transferFrom in time', async () => {
-            let expectedBalance = (await foodToken.balanceOf(accounts[1])).toNumber() + 1000;
-            await foodToken.approve(accounts[1], 1000);
+            let expectedBalance = (await foodCoin.balanceOf(accounts[1])).toNumber() + 1000;
+            await foodCoin.approve(accounts[1], 1000);
 
-            var allowed = await foodToken.allowance(accounts[0], accounts[1], 1000);
+            var allowed = await foodCoin.allowance(accounts[0], accounts[1], 1000);
             assert.equal(allowed, 1000);
 
-            await foodToken.transfer(accounts[1], 1000, {from: accounts[0]});
-            assert.equal(expectedBalance, await foodToken.balanceOf(accounts[1]));
+            await foodCoin.transfer(accounts[1], 1000, {from: accounts[0]});
+            assert.equal(expectedBalance, await foodCoin.balanceOf(accounts[1]));
         });
 
     });
@@ -231,14 +231,14 @@ contract('Contribiution', function(accounts) {
         });
 
         it ("unlock preallocated funds", async () => {
-          var balance = await foodToken.balanceOf(FOUNDER_STAKE);
+          var balance = await foodCoin.balanceOf(FOUNDER_STAKE);
           assert.equal(0, balance);
 
-          await foodToken.unlockBalance(FOUNDER);
-          balance = await foodToken.preallocatedBalanceOf(FOUNDER);
+          await foodCoin.unlockBalance(FOUNDER);
+          balance = await foodCoin.preallocatedBalanceOf(FOUNDER);
           assert.equal(0, balance);
 
-          balance = await foodToken.balanceOf(FOUNDER);
+          balance = await foodCoin.balanceOf(FOUNDER);
           assert.equal(FOUNDER_STAKE, balance);
         });
     });
@@ -258,16 +258,16 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test changing minter address in Token Contract', async () => {
-            var foodToken = await FoodToken.new(startTime, endTime);
-            await foodToken.setMinterAddress(accounts[1]);
-            assert.equal(await foodToken.minter(), accounts[1]);
+            var foodCoin = await FoodCoin.new(startTime, endTime);
+            await foodCoin.setMinterAddress(accounts[1]);
+            assert.equal(await foodCoin.minter(), accounts[1]);
         });
 
         it("Test changing minter address in Token Contract by non-sss", async () => {
             try {
-              await foodToken.setMinterAddress(accounts[2]);
+              await foodCoin.setMinterAddress(accounts[2]);
             } catch (e) {
-              assert.notEqual(await foodToken.minter(), accounts[2]);
+              assert.notEqual(await foodCoin.minter(), accounts[2]);
             }
         });
 
