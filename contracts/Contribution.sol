@@ -1,7 +1,10 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.11;
 
 import "./FoodCoin.sol";
 
+/// @title Contribution Contract for FoodCoin
+/// @author Marek Kirejczyk <marek.kirejczyk@gmail.com>
+/// @notice Inspired by https://github.com/melonproject/melon
 contract Contribution is SafeMath {
 
   FoodCoin public foodCoin;

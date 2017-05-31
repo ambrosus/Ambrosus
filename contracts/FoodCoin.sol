@@ -1,8 +1,10 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.11;
 
 import "./dependencies/SafeMath.sol";
 import "./dependencies/ERC20.sol";
 
+/// @title FoodCoin Token contract
+/// @author Marek Kirejczyk <marek.kirejczyk@gmail.com>
 contract FoodCoin is ERC20, SafeMath {
 
     // Constants
