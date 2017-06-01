@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/marekkirejczyk/foodtoken.svg?token=xjj4U84eSFwEsYLTc5Qe&branch=master)](https://travis-ci.com/marekkirejczyk/foodtoken)
+[![Build Status](https://travis-ci.org/foodblockchainxyz/FoodCoin.svg?branch=master)](https://travis-ci.org/foodblockchainxyz/FoodCoin)
 
 # FoodCoin
 
