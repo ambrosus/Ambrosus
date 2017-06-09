@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "./Requirements.sol";
+import "../Requirements/Requirements.sol";
 
 contract RangeRequirements is Requirements {
 
@@ -40,6 +40,14 @@ contract RangeRequirements is Requirements {
             maxs[i] = attributes[i].max;
         }
         return (identifers, attributeTypes, decimals, mins, maxs);
+    }
+
+    function getAttributeLength() constant returns (uint) {
+        return attributes.length;
+    }
+
+    function getAttribute(uint i) constant returns (bytes32, AttributeType, uint, int, int) {
+        return (attributes[i].identifer, attributes[i].attributeType, attributes[i].decimals, attributes[i].min, attributes[i].max);
     }
 
 }

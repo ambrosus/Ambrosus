@@ -1,7 +1,8 @@
 pragma solidity ^0.4.11;
 
+import "./Measurements.sol";
 
-contract MeasurementsOnChain {
+contract MeasurementsOnChain is Measurements {
 
     struct Measurement {
       bytes32 attribute_id;
@@ -22,7 +23,7 @@ contract MeasurementsOnChain {
         if (_events.length != _farmer_codes.length) throw;
         if (_events.length != _batch_nos.length) throw;
         for (uint i = 0; i < _events.length; i++) {
-            measurements.push(Measurement(_attributes[i], _values[i], _events[i], _timestamps[i], now, _farmer_codes[i], _batch_nos[i]));
+            measurements.push(Measurement(_attributes[i], _values[i], _events[i], _timestamps[i], block.timestamp, _farmer_codes[i], _batch_nos[i]));
         }
     }
 
@@ -42,7 +43,10 @@ contract MeasurementsOnChain {
             batch_ids[i] = measurements[i].batch_id;
         }
         return (attribute_ids, values, event_ids, timestamps, farmer_ids, batch_ids);
+    }
 
+    function getMeasurement(uint i, uint []) constant returns (bytes32, int, bytes32, uint, bytes32, bytes32) {    
+        return (measurements[i].attribute_id, measurements[i].value, measurements[i].event_id, measurements[i].timestamp, measurements[i].farmer_id, measurements[i].batch_id);
     }
 
 }
