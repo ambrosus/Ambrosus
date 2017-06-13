@@ -50,4 +50,19 @@ contract RangeRequirements is Requirements {
         return (attributes[i].identifer, attributes[i].attributeType, attributes[i].decimals, attributes[i].min, attributes[i].max);
     }
 
+    function getAttributeById(bytes32 _id) constant returns (bytes32, AttributeType, uint, int, int) {
+        bytes32 identifer;
+        RangeRequirements.AttributeType t;
+        uint decimal;
+        int min;
+        int max;
+        for (uint i = 0; i < attributes.length; i++) {
+            (identifer, t, decimal, min, max) = this.getAttribute(i);
+            if (identifer == _id) {
+                return (identifer, t, decimal, min, max);
+            }
+        }
+    }
+
+
 }

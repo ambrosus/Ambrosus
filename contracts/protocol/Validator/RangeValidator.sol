@@ -14,22 +14,15 @@ contract RangeValidator is Validator {
 		measurements = _measurements;
 	}
 
-	function isAttributeValid(uint i) constant returns (bool) {		
-		bytes32 identifer;
-		RangeRequirements.AttributeType t;
-		uint decimal;
-		int min;
-		int max;
-		(identifer, t, decimal, min, max) = requirements.getAttribute(i);
 
-		bytes32 attribute_id;
-		int value;
-		bytes32 event_id;
-		uint timestamp;
-		bytes32 farmer_id;
-		bytes32 batch_id;
-		(attribute_id, value, event_id, timestamp, farmer_id, batch_id) = measurements.getMeasurement(i, new uint[](0));
-
+	function isAttributeValid(uint i) constant returns (bool) {	
+		int value = measurements.getMeasurementValue(i, new uint [](0));
+        bytes32 identifer;
+        RangeRequirements.AttributeType t;
+        uint decimal;
+        int min;
+        int max;
+		(identifer, t, decimal, min, max) = requirements.getAttributeById("Volume");
 		return min <= value && value <= max;
 	}
 
