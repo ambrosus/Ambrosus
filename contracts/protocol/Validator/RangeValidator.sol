@@ -14,10 +14,10 @@ contract RangeValidator is Validator {
 		measurements = _measurements;
 	}
 
-
-	function isAttributeValid(uint i) constant returns (bool) {	
-		int value = measurements.getMeasurementValue(i, new uint [](0));
-        bytes32 identifer;
+	function isMeasurementValid(uint i) constant returns (bool) {	
+		int value;
+		bytes32 identifer;
+		(identifer, value) = measurements.getMeasurementIdAndValue(i, new uint [](0));
         RangeRequirements.AttributeType t;
         uint decimal;
         int min;
@@ -26,13 +26,29 @@ contract RangeValidator is Validator {
 		return min <= value && value <= max;
 	}
 
-	function validate() constant returns (bytes32 []) {
-		uint i = 0;
-		for (i = 0; i < requirements.getAttributeLength(); i++) {
-        	if (isAttributeValid(i))
-        	    i++;
+	function countInvalidFields() constant returns (uint count) {
+		for (uint i = 0; i < requirements.getAttributesLength(); i++) {
+        	if (isMeasurementValid(i))
+        	    count++;
         }
-        bytes32 [] memory result = new bytes32[](i);
+	}
+
+	function validate() constant returns (bytes32 []) {
+        uint j = 0;
+		int value;
+		bytes32 identifer;
+		uint size = countInvalidFields();
+        bytes32 [] memory result = new bytes32[](size);
+		
+		
+		
+		for (uint i = 0; i < requirements.getAttributesLength(); i++) {
+        	if (isMeasurementValid(i)) {
+        	    (identifer, value) = measurements.getMeasurementIdAndValue(i, new uint [](0));
+        	    result[j++] = identifer;
+        	}
+        }
+
         return result;
 	}
 

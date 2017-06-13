@@ -45,8 +45,9 @@ contract MeasurementsOnChain is Measurements {
         return (attribute_ids, values, event_ids, timestamps, farmer_ids, batch_ids);
     }
 
-    function getMeasurementValue(uint i, uint []) constant returns (int) {    
-        return (measurements[i].value);
+    function getMeasurementIdAndValue(uint i, uint []) constant returns (bytes32, int) {    
+            return (measurements[i].attribute_id, measurements[i].value);
     }
+
 
 }

@@ -42,7 +42,7 @@ contract RangeRequirements is Requirements {
         return (identifers, attributeTypes, decimals, mins, maxs);
     }
 
-    function getAttributeLength() constant returns (uint) {
+    function getAttributesLength() constant returns (uint) {
         return attributes.length;
     }
 
