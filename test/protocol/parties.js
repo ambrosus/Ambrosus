@@ -4,7 +4,6 @@ const testutils = require("../testutils.js");
 const BigNumber = require('bignumber.js');
 const Parties = artifacts.require("./protocol/Parties/Parties.sol");
 
-
 var parties;
 
 contract('RangeValidator', function(accounts) {
