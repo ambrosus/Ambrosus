@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 
 import "./Agreement.sol";
-import "../../FoodCoin.sol";
+import "../../dependencies/ERC20Protocol.sol";
 import "../Measurements/MeasurementsOnChain.sol";
 import "../Requirements/Requirements.sol";
 import "../Validator/Validator.sol";
-import "../Parties/Parties.sol";
+import "../Parties/TokenEscrowedParties.sol";
 
 
 contract DeliveryAgreement is Agreement {
@@ -18,9 +18,10 @@ contract DeliveryAgreement is Agreement {
         Reimbursed
     }
 
-	function DeliveryAgreement(FoodCoin token, Measurements measurements, Requirements requirements, Validator validator, Parties parties) {
-	}
+    Parties public parties;
 
-
+	function DeliveryAgreement(ERC20Protocol token, Measurements measurements, Requirements requirements, Validator validator) {
+        parties = new TokenEscrowedParties(token);
+    }
 	
 }

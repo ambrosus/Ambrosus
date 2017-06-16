@@ -6,23 +6,49 @@ const MeasurementsOnChain = artifacts.require("./protocol/Measurements/Measureme
 const RangeRequirements = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
 const RangeValidator = artifacts.require("./protocol/Validator/RangeValidator.sol");
 const DeliveryAgreement = artifacts.require("./protocol/Agreement/DeliveryAgreement.sol");
-const Parties = artifacts.require("./protocol/Parties/Parties.sol");
+const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties.sol");
 const FoodCoin = artifacts.require("./FoodCoin.sol");
 const BigNumber = require('bignumber.js');
 
+var foodCoin;
+var requirements;
+var validator;
+var parties;
+var measurements;
 var agreement;
+
+let AttributeTypeInteger = 0;
+let AttributeTypeBoolean = 1;
+
 
 contract('DeliveryAgreement', function(accounts) {
 
     it('Deploy contracts', async () => {
-        var result = await web3.eth.getBlock('earliest');
-        var startTime = result.timestamp;
-		var foodCoin = await FoodCoin.new(startTime, startTime);
-        var measurements = await MeasurementsOnChain.new();
-        var requirements = await RangeRequirements.new();
-        var validator = await RangeValidator.new();
-        var parties = await Parties.new();`
-        var agreement = await DeliveryAgreement.new(foodCoin.address, measurements.address, requirements.address, validator.address, parties.address);
+        let result = await web3.eth.getBlock('earliest');
+        let startTime = result.timestamp;
+
+        foodCoin = await FoodCoin.new(startTime, startTime);
+        await foodCoin.mintLiquidToken(accounts[0], 1000);
+        assert.equal(await foodCoin.balanceOf(accounts[0]), 1000);        
+
+        requirements = await RangeRequirements.new();        
+        await requirements.setAttributes(["Volume", "Color"], [AttributeTypeInteger, AttributeTypeBoolean], [0, 0], [22, 768], [24, 786]);
+
+        validator = await RangeValidator.new();
+        measurements = await MeasurementsOnChain.new();
+        agreement = await DeliveryAgreement.new(foodCoin.address, requirements.address, validator.address, measurements.address);
+
+        parties = TokenEscrowedParties.at(await agreement.parties());
+        
+        await foodCoin.approve(parties.address, 100);
+        await parties.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
+        // await parties.acceptInvite({from: accounts[1]});
+        await parties.approve();        
+        await measurements.addMeasurements(["Volume", "Color"], [22, 777], ["delivery", "shipping"], [1491848127,1491848135], ["farmer01", "famrmer02"], ["batch01", "batch02"])
+
+        assert.equal(await foodCoin.balanceOf(accounts[0]), 900);
+        assert.equal(await foodCoin.balanceOf(accounts[1]), 33);
+        assert.equal(await foodCoin.balanceOf(accounts[2]), 67);
     });
 
 });
