@@ -2,9 +2,10 @@ pragma solidity ^0.4.11;
 
 import "../../dependencies/ERC20Protocol.sol";
 import "../Utils/ArrayUtils.sol";
+import "../Utils/Ownable.sol";
 import "./Parties.sol";
 
-contract TokenEscrowedParties is Parties {
+contract TokenEscrowedParties is Parties, Ownable {
 
     using ArrayUtils for *;
 
@@ -78,14 +79,14 @@ contract TokenEscrowedParties is Parties {
         }
     }
 
-    function approve() onlyState(State.Locked) {
+    function approve() onlyState(State.Locked) onlyOwner {
         for (uint i = 0; i < parties.length; i++) {
             assert(token.transfer(parties[i].wallet, parties[i].amount));
         } 
         state = State.Approved;
     }
 
-    function reimburse() onlyState(State.Locked) {
+    function reimburse() onlyState(State.Locked) onlyOwner {
         token.transfer(buyer, token.balanceOf(this));
         state = State.Reimbursed;      
     }

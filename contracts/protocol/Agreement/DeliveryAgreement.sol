@@ -23,5 +23,9 @@ contract DeliveryAgreement is Agreement {
 	function DeliveryAgreement(ERC20Protocol token, Measurements measurements, Requirements requirements, Validator validator) {
         parties = new TokenEscrowedParties(token);
     }
+
+    function complete(bool success) {
+        success ? parties.approve() : parties.reimburse();
+    }
 	
 }

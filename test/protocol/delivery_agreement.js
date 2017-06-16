@@ -44,7 +44,7 @@ contract('DeliveryAgreement', function(accounts) {
         await parties.inviteParticipants([accounts[1], accounts[2]], [33, 67]);
         await parties.acceptInvite({from: accounts[1]});
         await parties.acceptInvite({from: accounts[2]});
-        await parties.approve();        
+        await agreement.complete(true);        
         await measurements.addMeasurements(["Volume", "Color"], [22, 777], ["delivery", "shipping"], [1491848127,1491848135], ["farmer01", "famrmer02"], ["batch01", "batch02"])
 
         assert.equal(await foodCoin.balanceOf(accounts[0]), 900);

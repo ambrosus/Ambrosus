@@ -4,4 +4,7 @@ contract Parties {
     
     function getParticipants() constant returns (address [], uint []);
 
+    function approve();
+
+    function reimburse();
 }
