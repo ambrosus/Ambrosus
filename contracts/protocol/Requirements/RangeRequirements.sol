@@ -16,7 +16,7 @@ contract RangeRequirements is Requirements {
 
 	Attribute [] attributes;
 
-    function setAttributes(bytes32 [] _identifers, AttributeType [] _attributeTypes, uint [] _decimals, int [] _mins, int [] _maxs) {
+    function setAttributes(bytes32 [] _identifers, AttributeType [] _attributeTypes, uint [] _decimals, int [] _mins, int [] _maxs) onlyUnlocked {
         assert(_identifers.length == _mins.length);
         assert(_identifers.length == _decimals.length);
         assert(_identifers.length == _attributeTypes.length);
@@ -24,6 +24,7 @@ contract RangeRequirements is Requirements {
         for (uint i = 0; i < _identifers.length; i++) {
             attributes.push(Attribute(_identifers[i], _attributeTypes[i], _decimals[i], _mins[i], _maxs[i]));
         }
+        locked = true;
     }
 
     function getAttributes() constant returns (bytes32 [], AttributeType [], uint [], int [], int []) {

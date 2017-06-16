@@ -1,5 +1,7 @@
 pragma solidity ^0.4.11;
 
-contract Requirements {
+import "../Utils/Lockable.sol";
+
+contract Requirements is Lockable {
 
 }

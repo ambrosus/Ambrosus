@@ -39,9 +39,7 @@ contract RangeValidator is Validator {
 		bytes32 identifer;
 		uint size = countInvalidFields();
         bytes32 [] memory result = new bytes32[](size);
-		
-		
-		
+
 		for (uint i = 0; i < requirements.getAttributesLength(); i++) {
         	if (isMeasurementValid(i)) {
         	    (identifer, value) = measurements.getMeasurementIdAndValue(i, new uint [](0));

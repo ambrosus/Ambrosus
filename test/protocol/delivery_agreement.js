@@ -36,6 +36,7 @@ contract('DeliveryAgreement', function(accounts) {
 
         validator = await RangeValidator.new();
         measurements = await MeasurementsOnChain.new();
+
         agreement = await DeliveryAgreement.new(foodCoin.address, requirements.address, validator.address, measurements.address);
 
         parties = TokenEscrowedParties.at(await agreement.parties());

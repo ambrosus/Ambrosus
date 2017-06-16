@@ -18,14 +18,18 @@ contract('RangeValidator', function(accounts) {
     it('Deploy contracts', async () => {
       measurements = await MeasurementsOnChain.new();
       requirements = await RangeRequirements.new();
+
       rangeValidator = await RangeValidator.new(measurements.address, requirements.address);
-      await requirements.setAttributes(["Volume"], [0], [IntegerType], [1], [3]);
-      await requirements.setAttributes(["Certified"], [BooleanType], [0], [1], [1]);
-      await requirements.setAttributes(["Lactose"], [IntegerType], [1], [66], [72]);
-      await requirements.setAttributes(["Fat"], [IntegerType], [2], [330], [341]);            
+      let attributes = ["Volume", "Certified", "Lactose", "Fat"];
+      let types = [IntegerType, BooleanType, IntegerType, IntegerType];
+      let decimals = [1,0,1,2];
+      let mins = [1, 1, 66, 330];
+      let maxs = [3, 1, 72, 342];
+      await requirements.setAttributes(attributes, types, decimals, mins, maxs);
+
       await measurements.addMeasurements(["Volume"], [1], [0], [1312312], [""], [""]);
       await measurements.addMeasurements(["Volume"], [4], [0], [1312312], [""], [""]);
-      await measurements.addMeasurements(["Certified"], [0], [0], [1312312], [""], [""]);
+      await measurements.addMeasurements(["No-GMO"], [0], [0], [1312312], [""], [""]);
       await measurements.addMeasurements(["Certified"], [1], [0], [1312312], [""], [""]);
       await measurements.addMeasurements(["Lactose"], [1], [0], [1312312], [""], [""]);
       await measurements.addMeasurements(["Fat"], [1], [0], [1312312], [""], [""]);            

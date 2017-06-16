@@ -18,13 +18,15 @@ contract DeliveryAgreement is Agreement {
         Reimbursed
     }
 
-    Parties public parties;
+    TokenEscrowedParties public parties;
 
-	function DeliveryAgreement(ERC20Protocol token, Measurements measurements, Requirements requirements, Validator validator) {
+	function DeliveryAgreement(ERC20Protocol token, Requirements requirements, Validator validator, Measurements measurements) {
+        require(requirements.locked());
         parties = new TokenEscrowedParties(token);
     }
 
     function complete(bool success) {
+        require(parties.state() == TokenEscrowedParties.State.Locked);        
         success ? parties.approve() : parties.reimburse();
     }
 	
