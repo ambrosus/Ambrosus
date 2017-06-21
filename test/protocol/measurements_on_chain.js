@@ -5,7 +5,7 @@ const MeasurementsOnChain = artifacts.require("./protocol/Measurements/Measureme
 
 var measurementsContract;
 
-contract('Measurements', function(accounts) {
+contract('MeasurementsOnChain', function(accounts) {
 
     it('Deploy contracts', async () => {
 		measurementsContract = await MeasurementsOnChain.new();
