@@ -7,6 +7,7 @@ const MeasurementsOffChain = artifacts.require("./protocol/Measurements/Measurem
 
 var measurementsContract;
 
+
 contract('MeasurementsOffChain', function(accounts) {
 
     it('Deploy contracts', async () => {

@@ -8,7 +8,6 @@ exports.byte32ArraytoAsciiArray = function(byte32Array) {
   return byte32Array.map( e => web3.toAscii(e).replace(/\0/g, '') );
 };
 
-
 // Inspired by https://gist.github.com/xavierlepretre/d5583222fde52ddfbc58b7cfa0d2d0a9
 exports.expectedExceptionPromise = function (action, gasToUse) {
   return new Promise(function (resolve, reject) {
@@ -70,3 +69,19 @@ exports.assertThrows = function(body) {
     .catch( () => { resolve(); });
   });
 }
+
+
+exports.signString = async function(web3, account, text) {
+        let sha = web3.sha3(text);
+        var sig = await web3.eth.sign(account, sha);
+        sig = sig.substr(2, 130);
+        let r = "0x" + sig.substr(0, 64);
+        let s = "0x" + sig.substr(64, 64);
+        let v = sig.substr(128, 2);        
+        if (v == "00") {
+            v = "0x1b";
+        } else {
+            v = "0x1c";
+        }
+        return [sha, v, r, s];
+    }
