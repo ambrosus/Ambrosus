@@ -26,7 +26,6 @@ contract('RangeValidator', function(accounts) {
       let mins = [1, 1, 66, 330];
       let maxs = [3, 1, 72, 342];
       await requirements.setAttributes(attributes, types, decimals, mins, maxs);
-
       await measurements.addMeasurements(["Volume"], [1], [0], [1312312], [""], [""]);
       await measurements.addMeasurements(["Volume"], [4], [0], [1312312], [""], [""]);
       await measurements.addMeasurements(["No-GMO"], [0], [0], [1312312], [""], [""]);

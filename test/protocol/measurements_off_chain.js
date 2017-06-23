@@ -15,7 +15,7 @@ contract('MeasurementsOffChain', function(accounts) {
     });
 
     it("should serialize and deserialize measurements", async () => {
-        var serialized = await measurementsContract.serializeMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01");
+        var serialized = await measurementsContract.serializeMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1], "");
         var deserialized = await measurementsContract.deserializeMeasurement(serialized);
         assert.equal(testutils.byte32toAscii(deserialized[0]), "Volume");        
         assert.equal(testutils.byte32toAscii(deserialized[2]), "delivery");        
