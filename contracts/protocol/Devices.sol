@@ -1,10 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "./Utils/Lockable.sol";
-import "./Utils/Ownable.sol";
-
-
-contract Devices is Lockable, Ownable {
+contract Devices {
 	
 	address [] public devices;
 
