@@ -1,7 +1,7 @@
 {
-  "name": "foodcoin",
+  "name": "qualit",
   "version": "0.1.0",
-  "description": "Smart contracts building FoodCoin protocol.",
+  "description": "Smart contracts building Qualit protocol.",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/foodblockchainxyz/FoodCoin.git"
+    "url": "git+https://github.com/foodblockchainxyz/Qualit.git"
   },
   "keywords": [
-    "FoodCoin",
+    "Qualit",
     "Solidity",
     "Ethereum",
     "Contribution",
@@ -27,7 +27,7 @@
   "author": "Marek Kirejczyk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/foodblockchainxyz/FoodCoin/issues"
+    "url": "https://github.com/foodblockchainxyz/Qualit/issues"
   },
-  "homepage": "https://github.com/foodblockchainxyz/FoodCoin#readme"
+  "homepage": "https://github.com/foodblockchainxyz/Qualit#readme"
 }
