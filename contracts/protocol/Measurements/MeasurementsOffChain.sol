@@ -1,3 +1,5 @@
+pragma solidity ^0.4.11;
+
 import "./Measurements.sol";
 import "../Devices.sol";
 
@@ -14,7 +16,7 @@ contract MeasurementsOffChain is Measurements {
         bytes32 hash;
     }
 
-    Devices devices;
+    Devices public devices;
 
     function MeasurementsOffChain(Devices _devices) {
         devices = _devices;
@@ -24,15 +26,25 @@ contract MeasurementsOffChain is Measurements {
         assert(false);
     }
     
+    function validateAddressList(uint [] data) constant returns (bool) {
+        for (uint i = 0; i < (data.length/8); i++) {
+            if (!devices.containsDevice(address(data[i*8+6]))) {
+              return false;
+            }
+        }
+        return true;
+    }
+
     function getMeasurements(uint [] data) constant returns (bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {
         require(data.length % 8 == 0);
+        require(validateAddressList(data));
         bytes32 [] memory attribute_ids = new bytes32[](data.length / 8);
         int [] memory values = new int[](data.length / 8);
         bytes32 [] memory event_ids = new bytes32[](data.length / 8);
         uint [] memory timestamps = new uint[](data.length / 8);
         bytes32 [] memory farmer_ids = new bytes32[](data.length / 8);
         bytes32 [] memory batch_ids = new bytes32[](data.length / 8);
-       for (uint i = 0; i < (data.length/8); i++) {
+        for (uint i = 0; i < (data.length/8); i++) {
             attribute_ids[i] = bytes32(data[i*8]);
             values[i] = int(data[i*8+1]);
             event_ids[i] = bytes32(data[i*8+2]);
@@ -41,6 +53,18 @@ contract MeasurementsOffChain is Measurements {
             batch_ids[i] = bytes32(data[i*8+5]);
         }
         return (attribute_ids, values, event_ids, timestamps, farmer_ids, batch_ids);
+    }
+
+    function hashMeasurement(
+        bytes32 _attribute, 
+        int  _value,
+        bytes32  _event,
+        uint  _timestamp,
+        bytes32  _farmer_code, 
+        bytes32  _batch_no, 
+        address  _device
+      ) constant returns (bytes32) {
+        return keccak256(_attribute, _value, _event, _timestamp, _farmer_code, _batch_no, _device);
     }
 
     function encodeMeasurements(
@@ -52,6 +76,13 @@ contract MeasurementsOffChain is Measurements {
         bytes32 [] memory _batch_nos, 
         address [] memory _devices, 
         bytes32 [] memory _hashes) constant returns (uint []) {
+
+        require(_events.length == _attributes.length);
+        require(_events.length == _values.length);
+        require(_events.length == _timestamps.length);
+        require(_events.length == _farmer_codes.length);
+        require(_events.length == _batch_nos.length);
+
         uint [] memory data = new uint[](_attributes.length * 8);
         for (uint i = 0; i < _values.length; i++) {
             data[i*8] = uint(_attributes[i]);

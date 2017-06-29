@@ -1,28 +1,36 @@
 "use strict";
 
-const assert = require('assert');
+const abi = require("../../lib/ABI.js");
+const Measurement = require("../../lib/Measurement.js");
 const testutils = require("../testutils.js");
 const BigNumber = require('bignumber.js');
+const Devices = artifacts.require("./protocol/Measurements/Devices.sol");
 const MeasurementsOffChain = artifacts.require("./protocol/Measurements/MeasurementsOffChain.sol");
+
 
 var measurementsContract;
 
-
 contract('MeasurementsOffChain', function(accounts) {
 
-    it('Deploy contracts', async () => {
-		measurementsContract = await MeasurementsOffChain.new();
+    before('Deploy contracts', async () => {
+        measurementsContract = await MeasurementsOffChain.new(Devices.new([accounts[1], accounts[2]]));
     });
 
     it("should serialize and deserialize measurements", async () => {
         var serialized = await measurementsContract.serializeMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1], "");
         var deserialized = await measurementsContract.deserializeMeasurement(serialized);
-        assert.equal(testutils.byte32toAscii(deserialized[0]), "Volume");        
-        assert.deepEqual(deserialized[1], new BigNumber(22));
+        assert.equal(testutils.byte32toAscii(deserialized[0]), "Volume");                
         assert.equal(testutils.byte32toAscii(deserialized[2]), "delivery");        
-        assert.deepEqual(deserialized[3], new BigNumber(1491848127));
         assert.equal(testutils.byte32toAscii(deserialized[4]), "fmr01");
-        assert.equal(testutils.byte32toAscii(deserialized[5]), "bch01");                
+        assert.equal(testutils.byte32toAscii(deserialized[5]), "bch01");         
+        assert.deepEqual(deserialized[1].toNumber(), 22);
+        assert.deepEqual(deserialized[3].toNumber(), 1491848127);
+    });
+
+    it("should calcualte hash for measurement", async () => { 
+        var hash = await measurementsContract.hashMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
+        var measurement = new Measurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
+        assert.equal(hash.substr(2, 64), measurement.hash());
     });
 
     it("should get data", async () => {

@@ -1,3 +1,5 @@
+pragma solidity ^0.4.11;
+
 library ArrayUtils {
 
     function sum(uint[] memory self) internal constant returns (uint result) {

@@ -6,11 +6,14 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ethereumjs-util": "^5.1.2"
+  },
   "devDependencies": {
     "bignumber.js": "^4.0.2"
   },
   "scripts": {
+    "isntall": "npm-git install",
     "test": "truffle test"
   },
   "repository": {
