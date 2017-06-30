@@ -20,7 +20,7 @@ contract DeliveryAgreement is Agreement {
 
     TokenEscrowedParties public parties;
 
-	function DeliveryAgreement(ERC20Protocol token, Requirements requirements, Validator validator, Measurements measurements) {
+	function DeliveryAgreement(ERC20Protocol token, Requirements requirements, Validator, Measurements) {
         require(requirements.locked());
         parties = new TokenEscrowedParties(token);
     }

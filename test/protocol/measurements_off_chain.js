@@ -12,6 +12,10 @@ var measurementsContract;
 
 contract('MeasurementsOffChain', function(accounts) {
 
+    let measurement1 = new Measurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
+    let measurement2 = new Measurement("Color", 777, "shipping", 1491848135, "fmr02", "bch02", accounts[2]);
+    let example_measurements = [measurement1, measurement2]
+
     before('Deploy contracts', async () => {
         measurementsContract = await MeasurementsOffChain.new(Devices.new([accounts[1], accounts[2]]));
     });
@@ -27,23 +31,14 @@ contract('MeasurementsOffChain', function(accounts) {
         assert.deepEqual(deserialized[3].toNumber(), 1491848127);
     });
 
-    it("should calcualte hash for measurement", async () => { 
+    it("should calcualte hash for measurement (form contract and js)", async () => { 
         var hash = await measurementsContract.hashMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
-        var measurement = new Measurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
-        assert.equal(hash.substr(2, 64), measurement.hash());
+        assert.equal(hash.substr(2, 64), measurement1.hash());
     });
 
-    it("should get data", async () => {
-        var data = await measurementsContract.encodeMeasurements(
-            ["Volume", "Color"],
-            [22, 777],
-            ["delivery", "shipping"],
-            [1491848127,1491848135],
-            ["fmr01", "fmr02"], 
-            ["bch01", "bch02"],
-            [accounts[1], accounts[2]],
-            ["", ""]);
-        var measurements = await measurementsContract.getMeasurements(data);
+    it("should get data from encoded array", async () => {
+        var result = Measurement.encodeMultiple(example_measurements);
+        var measurements = await measurementsContract.getMeasurements(result);
         let attributes = testutils.byte32ArraytoAsciiArray(measurements[0]);
         let values = measurements[1].map(e => e.toNumber());
         let events = testutils.byte32ArraytoAsciiArray(measurements[2]);
@@ -55,7 +50,7 @@ contract('MeasurementsOffChain', function(accounts) {
         assert.deepEqual(values, [22, 777]);
         assert.deepEqual(timestamps, [1491848127,1491848135]);
         assert.deepEqual(farmer_codes, ["fmr01", "fmr02"]);
-        assert.deepEqual(batch_nos, ["bch01", "bch02"]);
+        assert.deepEqual(batch_nos, ["bch01", "bch02"]);        
     });
 
 });

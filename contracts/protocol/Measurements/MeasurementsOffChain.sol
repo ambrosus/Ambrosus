@@ -26,7 +26,7 @@ contract MeasurementsOffChain is Measurements {
         assert(false);
     }
     
-    function validateAddressList(uint [] data) constant returns (bool) {
+    function validateAddressList(bytes32 [] data) constant returns (bool) {
         for (uint i = 0; i < (data.length/8); i++) {
             if (!devices.containsDevice(address(data[i*8+6]))) {
               return false;
@@ -35,7 +35,7 @@ contract MeasurementsOffChain is Measurements {
         return true;
     }
 
-    function getMeasurements(uint [] data) constant returns (bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {
+    function getMeasurements(bytes32 [] data) constant returns (bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {
         require(data.length % 8 == 0);
         require(validateAddressList(data));
         bytes32 [] memory attribute_ids = new bytes32[](data.length / 8);

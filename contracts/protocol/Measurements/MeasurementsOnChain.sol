@@ -27,7 +27,7 @@ contract MeasurementsOnChain is Measurements {
         }
     }
 
-    function getMeasurements(uint []) constant returns (bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {    
+    function getMeasurements(bytes32 []) constant returns (bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {    
         bytes32 [] memory attribute_ids = new bytes32[](measurements.length);
         int [] memory values = new int[](measurements.length);
         bytes32 [] memory event_ids = new bytes32[](measurements.length);
