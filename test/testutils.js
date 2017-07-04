@@ -77,12 +77,8 @@ exports.signString = async function(web3, account, text) {
   sig = sig.substr(2, 130);
   let r = "0x" + sig.substr(0, 64);
   let s = "0x" + sig.substr(64, 64);
-  let v = sig.substr(128, 2);        
-  if (v == "00") {
-      v = "0x1b";
-  } else {
-      v = "0x1c";
-  }
+  var v = web3.toDecimal('0x'+sig.substr(128, 2));        
+  if (v!=27 && v!=28) v+=27;
+  v = web3.toHex(v);
   return [sha, v, r, s];
 }
-

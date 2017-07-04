@@ -22,9 +22,10 @@ contract('ECVerify', function(accounts) {
         let text = "example";
         let ecverify = await ECVerify.new();
         [sha, v, r, s] = await testutils.signString(web3, accounts[0], text);
-        let hash = web3.sha3("\x19Ethereum Signed Message:\n" + text.length + text);
-        var result = await ecverify.verify(hash, v, r, s);        
-        assert.isOk(await ecverify.isCorrect(hash, v, r, s, accounts[0]));
+    	let hash = web3.sha3("\x19Ethereum Signed Message:\n" + text.length + text);
+	    var result = await ecverify.verify(hash, v, r, s);        
+	    
+	    assert.isOk(await ecverify.isCorrect(hash, v, r, s, accounts[0]));	
     });
 
 });
