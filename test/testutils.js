@@ -72,16 +72,17 @@ exports.assertThrows = function(body) {
 
 
 exports.signString = async function(web3, account, text) {
-        let sha = web3.sha3(text);
-        var sig = await web3.eth.sign(account, sha);
-        sig = sig.substr(2, 130);
-        let r = "0x" + sig.substr(0, 64);
-        let s = "0x" + sig.substr(64, 64);
-        let v = sig.substr(128, 2);        
-        if (v == "00") {
-            v = "0x1b";
-        } else {
-            v = "0x1c";
-        }
-        return [sha, v, r, s];
-    }
+  let sha = web3.fromUtf8(text);
+  var sig = await web3.eth.sign(account, sha);
+  sig = sig.substr(2, 130);
+  let r = "0x" + sig.substr(0, 64);
+  let s = "0x" + sig.substr(64, 64);
+  let v = sig.substr(128, 2);        
+  if (v == "00") {
+      v = "0x1b";
+  } else {
+      v = "0x1c";
+  }
+  return [sha, v, r, s];
+}
+
