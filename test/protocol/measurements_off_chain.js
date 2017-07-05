@@ -14,10 +14,13 @@ contract('MeasurementsOffChain', function(accounts) {
 
     let measurement1 = new Measurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
     let measurement2 = new Measurement("Color", 777, "shipping", 1491848135, "fmr02", "bch02", accounts[2]);
+    let invalid_measurment = new Measurement("Color", 777, "shipping", 1491848135, "fmr02", "bch02", accounts[5]);
+
     let example_measurements = [measurement1, measurement2]
 
     before('Deploy contracts', async () => {
-        measurementsContract = await MeasurementsOffChain.new(Devices.new([accounts[1], accounts[2]]));
+        var devices = await Devices.new([accounts[1], accounts[2]]);
+        measurementsContract = await MeasurementsOffChain.new(devices.address);
     });
 
     it("should serialize and deserialize measurements", async () => {
@@ -51,6 +54,12 @@ contract('MeasurementsOffChain', function(accounts) {
         assert.deepEqual(timestamps, [1491848127,1491848135]);
         assert.deepEqual(farmer_codes, ["fmr01", "fmr02"]);
         assert.deepEqual(batch_nos, ["bch01", "bch02"]);        
+    });
+
+    it('should not accept measurment with nonexistent device', async ()=>{
+        var result = invalid_measurment.encode();
+        assert.isNotOk(await measurementsContract.validateAddressList(result));
+
     });
 
 });
