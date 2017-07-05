@@ -62,6 +62,19 @@ contract('MeasurementsOffChain', function(accounts) {
 
     });
 
+    it('should verify hash correctly', async ()=>{
+        var result = Measurement.encodeMultiple(example_measurements);
+        var verification_result = await measurementsContract.varifyHashes(result);
+        assert.isOk(verification_result);
+    });
+
+    it('should not verify hash', async ()=>{
+        var result = Measurement.encodeMultiple(example_measurements);
+        result[7]='invalid_hash';
+        var verification_result = await measurementsContract.varifyHashes(result);
+        assert.isNotOk(verification_result);
+    });
+
 });
 
 

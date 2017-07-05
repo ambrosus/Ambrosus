@@ -35,9 +35,28 @@ contract MeasurementsOffChain is Measurements {
         return true;
     }
 
+    function varifyHashes(bytes32 [] data) constant returns (bool){
+        for (uint i = 0; i < (data.length/8); i++) {
+            if (hashMeasurement(
+                    bytes32(data[i*8]),
+                    int(data[i*8+1]),
+                    bytes32(data[i*8+2]),
+                    uint(data[i*8+3]),
+                    bytes32(data[i*8+4]),
+                    bytes32(data[i*8+5]),
+                    address(data[i*8+6])
+                ) != bytes32(data[i*8+7]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     function getMeasurements(bytes32 [] data) constant returns (bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {
         require(data.length % 8 == 0);
         require(validateAddressList(data));
+        require(varifyHashes(data));
         bytes32 [] memory attribute_ids = new bytes32[](data.length / 8);
         int [] memory values = new int[](data.length / 8);
         bytes32 [] memory event_ids = new bytes32[](data.length / 8);
@@ -54,6 +73,7 @@ contract MeasurementsOffChain is Measurements {
         }
         return (attribute_ids, values, event_ids, timestamps, farmer_ids, batch_ids);
     }
+
 
     function hashMeasurement(
         bytes32 _attribute, 
