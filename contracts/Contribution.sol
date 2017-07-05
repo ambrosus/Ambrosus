@@ -1,13 +1,13 @@
 pragma solidity ^0.4.11;
 
-import "./Qualit.sol";
+import "./Amber.sol";
 
-/// @title Contribution Contract for Qualit
+/// @title Contribution Contract for Amber
 /// @author Marek Kirejczyk <marek.kirejczyk@gmail.com>
 /// @notice Inspired by https://github.com/melonproject/melon
 contract Contribution is SafeMath {
 
-  Qualit public qualit;
+  Amber public amber;
   address public sss;
 
   uint public constant MAX_CONTRIBUTION_DURATION = 4 weeks;
@@ -51,8 +51,8 @@ contract Contribution is SafeMath {
     sss = _sss;
     startTime = _startTime;
     endTime = startTime + MAX_CONTRIBUTION_DURATION;
-    qualit = new Qualit(startTime, endTime);
-    qualit.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
+    amber = new Amber(startTime, endTime);
+    amber.preallocateToken(FOUNDER_ONE, FOUNDER_STAKE);
     // TODO Preallocate all tokens
   }
 
@@ -66,7 +66,7 @@ contract Contribution is SafeMath {
     is_not_halted
   {
     uint amount = safeMul(msg.value, PRICE_RATE_FIRST) / DIVISOR_PRICE;
-    qualit.mintLiquidToken(msg.sender, amount);
+    amber.mintLiquidToken(msg.sender, amount);
     assert(sss.send(msg.value));
     TokensBought(msg.sender, msg.value, amount);
   }

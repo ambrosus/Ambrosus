@@ -6,7 +6,7 @@ const BigNumber = require('bignumber.js');
 const MockToken = artifacts.require("../Utils/MockToken.sol");
 const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties.sol");
 
-var qualit;
+var amber;
 var parties;
 
 let StateNew = 0;
@@ -18,11 +18,11 @@ let StateReimbursed = 4;
 contract('RangeValidator', function(accounts) {
 
 	beforeEach("deploy contracts", async() => {
-        qualit = await MockToken.new([accounts[0]], [300]);
-		parties = await TokenEscrowedParties.new(qualit.address);
+        amber = await MockToken.new([accounts[0]], [300]);
+		parties = await TokenEscrowedParties.new(amber.address);
 		assert.equal(await parties.state(), StateNew);
 
-		await qualit.approve(parties.address, 300);
+		await amber.approve(parties.address, 300);
 		await parties.inviteParticipants([accounts[1], accounts[2]], [100, 200]);
 		assert.equal(await parties.state(), StateInvited);
 	});
@@ -57,8 +57,8 @@ contract('RangeValidator', function(accounts) {
         assert.equal(await parties.state(), StateLocked);
 		
 		await parties.approve();
-		assert.deepEqual(await qualit.balanceOf(accounts[1]), new BigNumber(100));
-		assert.deepEqual(await qualit.balanceOf(accounts[2]), new BigNumber(200));
+		assert.deepEqual(await amber.balanceOf(accounts[1]), new BigNumber(100));
+		assert.deepEqual(await amber.balanceOf(accounts[2]), new BigNumber(200));
 		assert.equal(await parties.state(), StateApproved);
     });
 
@@ -68,7 +68,7 @@ contract('RangeValidator', function(accounts) {
         assert.equal(await parties.state(), StateLocked);
 
 		await parties.reimburse();
-		assert.deepEqual(await qualit.balanceOf(accounts[0]), new BigNumber(300));
+		assert.deepEqual(await amber.balanceOf(accounts[0]), new BigNumber(300));
 		assert.equal(await parties.state(), StateReimbursed);
     });
 

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.11;
 
-import "./Qualit.sol";
+import "./Amber.sol";
 
-/// @title Delivery - Core Contract for Qualit protocol
+/// @title Delivery - Core Contract for Amber protocol
 /// @author Marek Kirejczyk <marek.kirejczyk@gmail.com>
 contract DeliveryContract {
 
@@ -58,7 +58,7 @@ contract DeliveryContract {
     
     mapping(address => uint) party_from_address;
 
-    Qualit public qualit;
+    Amber public amber;
 
     modifier onlyOwner {
         assert(msg.sender == owner);
@@ -70,11 +70,11 @@ contract DeliveryContract {
         _;
     }
 
-    function DeliveryContract(bytes32 _name, bytes32 _code, address _qualitAddress) {
+    function DeliveryContract(bytes32 _name, bytes32 _code, address _amberAddress) {
         owner = msg.sender;
         name = _name;
         code = _code;
-        qualit = Qualit(_qualitAddress);
+        amber = Amber(_amberAddress);
     }
 
     function setAttributes(bytes32 [] _identifers, int [] _mins, int [] _maxs) onlyOwner onlyStage(Stages.New) {
@@ -97,7 +97,7 @@ contract DeliveryContract {
             parties.push(Party(_parties[i], _amounts[i], false));
             party_from_address[_parties[i]] = i;
         }
-        assert(qualit.transferFrom(owner, this, escrowed_amount));
+        assert(amber.transferFrom(owner, this, escrowed_amount));
     }
     
     function processInvite(address _party, bool response) onlyStage(Stages.WaitingForParties) returns (uint)
@@ -129,7 +129,7 @@ contract DeliveryContract {
     function approve() onlyOwner onlyStage(Stages.InProgress)  {
         stage = Stages.Complete;
         for (uint i = 0; i < parties.length; i++) {
-            assert(qualit.transfer(parties[i].wallet, parties[i].amount));
+            assert(amber.transfer(parties[i].wallet, parties[i].amount));
         }
     }
 
@@ -137,7 +137,7 @@ contract DeliveryContract {
         stage = Stages.Reimbursed;
         uint amount = escrowed_amount;
         escrowed_amount = 0;
-        qualit.transfer(owner, amount);
+        amber.transfer(owner, amount);
     }
 
     function addMeasurements(bytes32 [] _events, bytes32 [] _attributes, int [] _values, uint [] _timestamps, bytes32 [] _farmer_codes, bytes32 [] _batch_nos) {

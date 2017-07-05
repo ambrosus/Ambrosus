@@ -1,13 +1,13 @@
 "use strict";
 
-const Qualit = artifacts.require("./Qualit.sol");
+const Amber = artifacts.require("./Amber.sol");
 const Contribution = artifacts.require("./Contribution.sol");
 const assert = require('assert');
 const testUtils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
 
 let contribution;
-let qualit;
+let amber;
 
 contract('Contribiution', function(accounts) {
 
@@ -44,18 +44,18 @@ contract('Contribiution', function(accounts) {
     describe('CONTRACT DEPLOYMENT', () => {
         it('Deploy Contribution contracts', async () => {
           contribution = await Contribution.new(startTime, sss);
-          qualit = Qualit.at(await contribution.qualit());
+          amber = Amber.at(await contribution.amber());
         });
 
         it('Check time initialisation', async () => {
-          assert.equal(startTime, await qualit.startTime());
-          assert.equal(endTime, await qualit.endTime());
+          assert.equal(startTime, await amber.startTime());
+          assert.equal(endTime, await amber.endTime());
           assert.equal(startTime, await contribution.startTime());
           assert.equal(endTime, await contribution.endTime());
         });
 
         it ("preallocated tokens", async () => {
-            var balance = await qualit.preallocatedBalanceOf(FOUNDER)
+            var balance = await amber.preallocatedBalanceOf(FOUNDER)
             assert.equal(FOUNDER_STAKE, balance);
         });
 
@@ -67,7 +67,7 @@ contract('Contribiution', function(accounts) {
             testUtils.assertThrows(() => {
               return contribution.buy({ from: accounts[0], value: 1000 })
             }).then(async () => {
-              var balance = await qualit.balanceOf(accounts[0]);
+              var balance = await amber.balanceOf(accounts[0]);
               assert.equal(balance.toNumber(), 0);
               done();
             });
@@ -75,9 +75,9 @@ contract('Contribiution', function(accounts) {
 
         it ("non-minter can't preallocate tokens", (done) => {
             testUtils.assertThrows(() => {
-              return qualit.preallocateToken(NON_FOUNDER, FOUNDER_STAKE);
+              return amber.preallocateToken(NON_FOUNDER, FOUNDER_STAKE);
             }).then(async () => {
-              var balance = await qualit.preallocatedBalanceOf(NON_FOUNDER);
+              var balance = await amber.preallocatedBalanceOf(NON_FOUNDER);
               assert.equal(balance.toNumber(), 0);
               done();
             });
@@ -85,9 +85,9 @@ contract('Contribiution', function(accounts) {
         
         it ("can't unlock preallocated funds", (done) => {
           testUtils.assertThrows(() => {
-            return qualit.unlockBalance(FOUNDER);
+            return amber.unlockBalance(FOUNDER);
           }).then(async () => {
-            var balance = await qualit.balanceOf(FOUNDER);
+            var balance = await amber.balanceOf(FOUNDER);
             assert.equal(balance.toNumber(), 0);
             done();
           });
@@ -101,7 +101,7 @@ contract('Contribiution', function(accounts) {
 
         it('Test buying in time', async () => {
             await contribution.buy({ from: accounts[0], value: 4000000});
-            var balance = await qualit.balanceOf(accounts[0]);
+            var balance = await amber.balanceOf(accounts[0]);
             assert.equal(balance.toNumber(), 8800000);
         });
 
@@ -119,14 +119,14 @@ contract('Contribiution', function(accounts) {
                 contribution.buy({ from: accounts[0], value: 4000000}).catch( () => {
                         contribution.halted().then((halt) => {
                             assert.equal(halt, true);
-                            return qualit.balanceOf(accounts[0]);
+                            return amber.balanceOf(accounts[0]);
                         }).then((balance) => {
                             assert.equal(balance.toNumber(), 8800000);
                             return contribution.unhalt({from: sss});
                         }).then(() => {
                             return contribution.buy({ from: accounts[0], value: 4000000});
                         }).then(() => {
-                            return qualit.balanceOf(accounts[0]);
+                            return amber.balanceOf(accounts[0]);
                         }).then((balance) => {
                             assert.equal(balance.toNumber(), 17600000);
                             done();
@@ -137,12 +137,12 @@ contract('Contribiution', function(accounts) {
 
         it('Test minting liquid token from non-minter fails', (done) => {
             let balance;
-            qualit.balanceOf(accounts[0]).then((_balance) => {
+            amber.balanceOf(accounts[0]).then((_balance) => {
                 balance = _balance;
             }).then(() => {
-                return qualit.mintLiquidToken(accounts[1], 1000);
+                return amber.mintLiquidToken(accounts[1], 1000);
             }).catch(() => {
-                return qualit.balanceOf(accounts[0]);
+                return amber.balanceOf(accounts[0]);
             }).then((result) => {
                 assert.equal(result.toNumber(), balance);
                 done();
@@ -151,12 +151,12 @@ contract('Contribiution', function(accounts) {
 
         it ("test unlocking too early", (done) => {
             let balance;
-            qualit.balanceOf(FOUNDER_STAKE).then((_balance) => {
+            amber.balanceOf(FOUNDER_STAKE).then((_balance) => {
                 balance = _balance;
             }).then(() => {
-                return qualit.unlockBalance(FOUNDER);
+                return amber.unlockBalance(FOUNDER);
             }).catch((reason) => {
-                qualit.balanceOf(FOUNDER_STAKE).then((result) => {
+                amber.balanceOf(FOUNDER_STAKE).then((result) => {
                     assert.equal(result.toNumber(), balance);
                     done();
                 });
@@ -164,8 +164,8 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test token transfer too early', (done) => {
-            qualit.transfer(accounts[1], 1000, {from: accounts[0]}).catch((r) => {
-                return qualit.balanceOf(accounts[1]).then((result) => {
+            amber.transfer(accounts[1], 1000, {from: accounts[0]}).catch((r) => {
+                return amber.balanceOf(accounts[1]).then((result) => {
                     assert.equal(result.toNumber(), 0);
                     done();
                 });
@@ -173,13 +173,13 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test token transferFrom too early', (done) => {
-            qualit.approve(accounts[1], 1000).then( () => {
-                return qualit.allowance(accounts[0], accounts[1], 1000);
+            amber.approve(accounts[1], 1000).then( () => {
+                return amber.allowance(accounts[0], accounts[1], 1000);
             }).then((allowed) => {
                 assert.equal(allowed, 1000);
-                return qualit.transferFrom(accounts[0], accounts[1], 1000, {from: accounts[1]});
+                return amber.transferFrom(accounts[0], accounts[1], 1000, {from: accounts[1]});
             }).catch((r) => {
-                return qualit.balanceOf(accounts[1]).then((result) => {
+                return amber.balanceOf(accounts[1]).then((result) => {
                     assert.equal(result.toNumber(), 0);
                     done();
                 });
@@ -194,12 +194,12 @@ contract('Contribiution', function(accounts) {
 
         it('Test buying too late', (done) => {
           let balance;
-          qualit.balanceOf(accounts[0]).then((_balance) => {
+          amber.balanceOf(accounts[0]).then((_balance) => {
               balance = _balance;
           }).then( () => {
               return contribution.buy({ from: accounts[0], value: 1000 });
           }).catch(() => {
-              return qualit.balanceOf(accounts[0]);
+              return amber.balanceOf(accounts[0]);
           }).then((result) => {
               assert.equal(result.toNumber(), balance);
               done();
@@ -207,20 +207,20 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test token transfer in time', async () => {
-            let expectedBalance = (await qualit.balanceOf(accounts[1])).toNumber() + 1000;
-            await qualit.transfer(accounts[1], 1000, {from: accounts[0]});
-            assert.equal(expectedBalance, await qualit.balanceOf(accounts[1]));
+            let expectedBalance = (await amber.balanceOf(accounts[1])).toNumber() + 1000;
+            await amber.transfer(accounts[1], 1000, {from: accounts[0]});
+            assert.equal(expectedBalance, await amber.balanceOf(accounts[1]));
         });
 
         it('Test token transferFrom in time', async () => {
-            let expectedBalance = (await qualit.balanceOf(accounts[1])).toNumber() + 1000;
-            await qualit.approve(accounts[1], 1000);
+            let expectedBalance = (await amber.balanceOf(accounts[1])).toNumber() + 1000;
+            await amber.approve(accounts[1], 1000);
 
-            var allowed = await qualit.allowance(accounts[0], accounts[1], 1000);
+            var allowed = await amber.allowance(accounts[0], accounts[1], 1000);
             assert.equal(allowed, 1000);
 
-            await qualit.transfer(accounts[1], 1000, {from: accounts[0]});
-            assert.equal(expectedBalance, await qualit.balanceOf(accounts[1]));
+            await amber.transfer(accounts[1], 1000, {from: accounts[0]});
+            assert.equal(expectedBalance, await amber.balanceOf(accounts[1]));
         });
 
     });
@@ -231,14 +231,14 @@ contract('Contribiution', function(accounts) {
         });
 
         it ("unlock preallocated funds", async () => {
-          var balance = await qualit.balanceOf(FOUNDER_STAKE);
+          var balance = await amber.balanceOf(FOUNDER_STAKE);
           assert.equal(0, balance);
 
-          await qualit.unlockBalance(FOUNDER);
-          balance = await qualit.preallocatedBalanceOf(FOUNDER);
+          await amber.unlockBalance(FOUNDER);
+          balance = await amber.preallocatedBalanceOf(FOUNDER);
           assert.equal(0, balance);
 
-          balance = await qualit.balanceOf(FOUNDER);
+          balance = await amber.balanceOf(FOUNDER);
           assert.equal(FOUNDER_STAKE, balance);
         });
     });
@@ -258,16 +258,16 @@ contract('Contribiution', function(accounts) {
         });
 
         it('Test changing minter address in Token Contract', async () => {
-            var qualit = await Qualit.new(startTime, endTime);
-            await qualit.setMinterAddress(accounts[1]);
-            assert.equal(await qualit.minter(), accounts[1]);
+            var amber = await Amber.new(startTime, endTime);
+            await amber.setMinterAddress(accounts[1]);
+            assert.equal(await amber.minter(), accounts[1]);
         });
 
         it("Test changing minter address in Token Contract by non-sss", async () => {
             try {
-              await qualit.setMinterAddress(accounts[2]);
+              await amber.setMinterAddress(accounts[2]);
             } catch (e) {
-              assert.notEqual(await qualit.minter(), accounts[2]);
+              assert.notEqual(await amber.minter(), accounts[2]);
             }
         });
 

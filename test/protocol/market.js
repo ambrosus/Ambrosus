@@ -8,7 +8,7 @@ const RangeRequirements = artifacts.require("./protocol/Requirements/RangeRequir
 const RangeValidator = artifacts.require("./protocol/Validator/RangeValidator.sol");
 const DeliveryAgreement = artifacts.require("./protocol/Agreement/DeliveryAgreement.sol");
 const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties");
-const Qualit = artifacts.require("./Qualit.sol");
+const Amber = artifacts.require("./Amber.sol");
 
 
 let IntegerType = 0;

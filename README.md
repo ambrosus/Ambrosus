@@ -1,17 +1,17 @@
 [![Build Status](https://travis-ci.org/qualisuch/Qualit.svg?branch=master)](https://travis-ci.org/qualisuch/Qualit)
 
-# Qualit
+# Ambrosus protocol
 
 This repository contains smart contracts constituting Qualisuch protocol, in particular:
-- Qualit - ERC20 Token representing Qualit
+- Amber - ERC20 Token representing powering Ambrosus protocol
 - ICO Contribution contract
-- Smart contracts Contracts building Qualisuch protocol.
+- Smart contracts constituting Ambrosus protocol.
 
 ## Installation and testing
 
 1. Clone repository
     ```
-    git clone git@github.com:qualisuch/Qualit.git
+    git clone git@github.com:ambrosus/Qualit.git
     cd Qualit
     ```
 

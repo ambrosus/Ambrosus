@@ -1,7 +1,7 @@
 "use strict";
 
 const DeliveryContract = artifacts.require("./DeliveryContract.sol");
-const Qualit = artifacts.require("./Qualit.sol");
+const Amber = artifacts.require("./Amber.sol");
 const assert = require('assert');
 const testutils = require("./testutils.js");
 const BigNumber = require('bignumber.js');
@@ -16,7 +16,7 @@ async function setup(accounts, done) {
     web3.eth.getBlock('earliest', async (err, result) => {
         startTime = result.timestamp;
         endTime = startTime;        
-        token = await Qualit.new(startTime, endTime)
+        token = await Amber.new(startTime, endTime)
         delivery = await DeliveryContract.new("The Name", "The Code", token.address);
         done();
     });

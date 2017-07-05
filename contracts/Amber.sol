@@ -3,9 +3,9 @@ pragma solidity ^0.4.11;
 import "./dependencies/SafeMath.sol";
 import "./dependencies/ERC20.sol";
 
-/// @title Qualit Token contract
+/// @title Amber Token contract
 /// @author Marek Kirejczyk <marek.kirejczyk@gmail.com>
-contract Qualit is ERC20, SafeMath {
+contract Amber is ERC20, SafeMath {
 
     // Constants
     string public constant name = "Food Token";
@@ -36,7 +36,7 @@ contract Qualit is ERC20, SafeMath {
         _;
     }
 
-    function Qualit(uint _startTime, uint _endTime) {
+    function Amber(uint _startTime, uint _endTime) {
       startTime = _startTime;
       endTime = _endTime;
       minter = msg.sender;

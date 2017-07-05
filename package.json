@@ -1,7 +1,7 @@
 {
-  "name": "qualit",
+  "name": "amber",
   "version": "0.1.0",
-  "description": "Smart contracts building Qualit protocol.",
+  "description": "Smart contracts building Amber protocol.",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/foodblockchainxyz/Qualit.git"
+    "url": "git+https://github.com/foodblockchainxyz/Amber.git"
   },
   "keywords": [
-    "Qualit",
+    "Amber",
     "Solidity",
     "Ethereum",
     "Contribution",
@@ -29,7 +29,7 @@
   "author": "Marek Kirejczyk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/foodblockchainxyz/Qualit/issues"
+    "url": "https://github.com/foodblockchainxyz/Amber/issues"
   },
-  "homepage": "https://github.com/foodblockchainxyz/Qualit#readme"
+  "homepage": "https://github.com/foodblockchainxyz/Amber#readme"
 }
