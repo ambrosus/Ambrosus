@@ -1,18 +1,18 @@
-[![Build Status](https://travis-ci.org/qualisuch/Qualit.svg?branch=master)](https://travis-ci.org/qualisuch/Qualit)
+[![Build Status](https://travis-ci.org/ambrosus/Ambrosus.svg?branch=master)](https://travis-ci.org/ambrosus/Ambrosus)
 
 # Ambrosus protocol
 
-This repository contains smart contracts constituting Qualisuch protocol, in particular:
+This repository contains smart contracts constituting Ambrosus protocol, in particular:
 - Amber - ERC20 Token representing powering Ambrosus protocol
 - ICO Contribution contract
-- Smart contracts constituting Ambrosus protocol.
+- Smart contracts constituting Ambrosus protocol itself
 
 ## Installation and testing
 
 1. Clone repository
     ```
-    git clone git@github.com:ambrosus/Qualit.git
-    cd Qualit
+    git clone git@github.com:ambrosus/Ambrosus.git
+    cd Ambrosus
     ```
 
 2. Install global dependencies, such as [Truffle](https://github.com/ConsenSys/truffle) (requires NodeJS 5.0+) and [Testrpc](https://github.com/ethereumjs/testrpc), then install local dependencies:
