@@ -24,7 +24,7 @@ contract('MeasurementsOffChain', function(accounts) {
     });
 
     it("should serialize and deserialize measurements", async () => {
-        var serialized = await measurementsContract.serializeMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1], "");
+        var serialized = await measurementsContract.serializeMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1], "", 1, "", "");
         var deserialized = await measurementsContract.deserializeMeasurement(serialized);
         assert.equal(testutils.byte32toAscii(deserialized[0]), "Volume");                
         assert.equal(testutils.byte32toAscii(deserialized[2]), "delivery");        
@@ -36,11 +36,16 @@ contract('MeasurementsOffChain', function(accounts) {
 
     it("should calcualte hash for measurement (form contract and js)", async () => { 
         var hash = await measurementsContract.hashMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
-        assert.equal(hash.substr(2, 64), measurement1.hash());
+        assert.equal(hash, (await measurement1.signedHash())[0]);
+    });
+
+    it('should retreive address from signed hash', async ()=>{
+        var result = await measurement1.encode();
+        assert.isOk(await measurementsContract.isCorrect(result[7],result[8],result[9],result[10],result[6]));
     });
 
     it("should get data from encoded array", async () => {
-        var result = Measurement.encodeMultiple(example_measurements);
+        var result = await Measurement.encodeMultiple(example_measurements);
         var measurements = await measurementsContract.getMeasurements(result);
         let attributes = testutils.byte32ArraytoAsciiArray(measurements[0]);
         let values = measurements[1].map(e => e.toNumber());
@@ -57,21 +62,21 @@ contract('MeasurementsOffChain', function(accounts) {
     });
 
     it('should not accept measurment with nonexistent device', async ()=>{
-        var result = invalid_measurment.encode();
+        var result = await invalid_measurment.encode();
         assert.isNotOk(await measurementsContract.validateAddressList(result));
 
     });
 
-    it('should verify hash correctly', async ()=>{
-        var result = Measurement.encodeMultiple(example_measurements);
-        var verification_result = await measurementsContract.varifyHashes(result);
+    it('should verify correct hash', async ()=>{
+        var result = await Measurement.encodeMultiple(example_measurements);
+        var verification_result = await measurementsContract.verifyHashes(result);
         assert.isOk(verification_result);
     });
 
-    it('should not verify hash', async ()=>{
-        var result = Measurement.encodeMultiple(example_measurements);
+    it('should not verify invalid hash', async ()=>{
+        var result = await Measurement.encodeMultiple(example_measurements);
         result[7]='invalid_hash';
-        var verification_result = await measurementsContract.varifyHashes(result);
+        var verification_result = await measurementsContract.verifyHashes(result);
         assert.isNotOk(verification_result);
     });
 
