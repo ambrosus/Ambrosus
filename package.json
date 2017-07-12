@@ -15,7 +15,8 @@
     "bignumber.js": "^4.0.2"
   },
   "scripts": {
-    "test": "truffle test"
+    
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
