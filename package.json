@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "ethereumjs-util": "^5.1.2",
-    "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
-    "through2": "^2.0.3"
+    "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git"
   },
   "devDependencies": {
     "bignumber.js": "^4.0.2",

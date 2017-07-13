@@ -37,7 +37,7 @@ contract('MeasurementsOffChain', function(accounts) {
 
     it("should calcualte hash for measurement (form contract and js)", async () => { 
         var hash = await measurementsContract.hashMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
-        assert.equal(hash, (await measurement1._signedHash())[0]);
+        assert.equal(hash, (await measurement1.signedHash())[0]);
     });
 
     it('should retreive address from signed hash', async ()=>{
@@ -69,7 +69,6 @@ contract('MeasurementsOffChain', function(accounts) {
     });
 
     it('MeasurementsStorage storage should throw error if device doesnt exist',async ()=>{
-
         var storage = new MeasurementsStorage(null, measurementsContract.address);
         
         try{
@@ -77,12 +76,11 @@ contract('MeasurementsOffChain', function(accounts) {
             assert(false, 'Error expected');
         }
         catch(err){
-            assert.equal(err.message,'No device on address list');
+            assert.equal(err.message,'Some of the measurements were done by unauthorized devices.');
         }
     });
 
     it('MeasurementsStorage storage should throw error if wrong hash',async ()=>{
-
         var storage = new MeasurementsStorage(null, measurementsContract.address);
         var result = await measurement1.encode();
         result[7]='invalid_hash';
@@ -92,12 +90,11 @@ contract('MeasurementsOffChain', function(accounts) {
             assert(false, 'Error expected');
         }
         catch(err){
-            assert.equal(err.message,'Wrong hash or not signed');
+            assert.equal(err.message,'Some of the measurements have invalid signatures.');
         }
     });
 
-
-    it('MeasurementsStorage storage should check if device exists', async ()=>{
+    it('MeasurementsStorage storage not throw if hash ok', async ()=>{
         var storage = new MeasurementsStorage(null, measurementsContract.address);
         await storage.validateMeasurement(await Measurement.encodeMultiple([measurement1,measurement2]));    
     });
