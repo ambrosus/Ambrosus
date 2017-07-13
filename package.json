@@ -16,7 +16,7 @@
   },
   "scripts": {
     
-    "test": "mocha"
+    "test": "mocha ./storage-test && truffle test"
   },
   "repository": {
     "type": "git",
