@@ -1,8 +1,8 @@
 {
-  "name": "amber",
+  "name": "ambrosus",
   "version": "0.1.0",
   "description": "Smart contracts building Amber protocol.",
-  "main": "truffle.js",
+  "main": "lib/index.js",
   "directories": {
     "test": "test"
   },
@@ -29,7 +29,7 @@
   "author": "Marek Kirejczyk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/foodblockchainxyz/Amber/issues"
+    "url": "https://github.com/ambrosus/Ambrosus"
   },
-  "homepage": "https://github.com/foodblockchainxyz/Amber#readme"
+  "homepage": "http://ambrosus.com/"
 }
