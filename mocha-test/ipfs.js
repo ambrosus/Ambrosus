@@ -20,7 +20,7 @@ describe('MeasurementsStorage', function() {
             await storage.addMeasurement(measurement1);
             await storage.addMeasurement(measurement2);
 
-            var measurements = await storage.getMeasurements();
+            var measurements = await storage.doGetMeasurements();
             assert.deepEqual(measurements.sort(), [measurement1,measurement1,measurement2].sort());
 
             ipfs.stop(()=>done());            
@@ -33,11 +33,11 @@ describe('MeasurementsStorage', function() {
         ipfs.on('ready', async () => {
             var storage = new MeasurementsStorage(new IPFSStorage(ipfs));  
 
-            var measurements = await storage.getMeasurements();                                
+            var measurements = await storage.doGetMeasurements();                                
             await storage.storage.createCatalog();
 
             assert.deepEqual(measurements, []);
-            assert.deepEqual(await storage.getMeasurements(), []);
+            assert.deepEqual(await storage.doGetMeasurements(), []);
 
             ipfs.stop(done);            
         });
@@ -55,7 +55,7 @@ describe('MeasurementsStorage', function() {
             await storage.addMeasurement(measurement2);
 
             await ipfsStorage.retreiveCatalogFromHash(ipfsStorage.getCatalogHash());
-            var measurements = await new MeasurementsStorage(ipfsStorage).getMeasurements();
+            var measurements = await new MeasurementsStorage(ipfsStorage).doGetMeasurements();
 
             assert.deepEqual(measurements.sort(), [measurement1,measurement1,measurement2].sort()); 
 

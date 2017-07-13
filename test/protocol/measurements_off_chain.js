@@ -1,10 +1,8 @@
 "use strict";
 
 const abi = require("../../lib/ABI.js");
-const IPFS = require('ipfs');
 const Measurement = require("../../lib/Measurement.js");
 const MeasurementsStorage = require("../../lib/MeasurementsStorage.js");
-const IPFSStorage = require("../../lib/IPFSStorage.js");
 const testutils = require("../testutils.js");
 const BigNumber = require('bignumber.js');
 const Devices = artifacts.require("./protocol/Measurements/Devices.sol");
@@ -36,24 +34,6 @@ contract('MeasurementsOffChain', function(accounts) {
         assert.deepEqual(deserialized[1].toNumber(), 22);
         assert.deepEqual(deserialized[3].toNumber(), 1491848127);
     });
-
-    it("should get correct measurements from ipfs", (done)=>{
-        var ipfs = new IPFS();
-        
-        ipfs.on('ready', async () => {
-            var storage = new MeasurementsStorage(new IPFSStorage(ipfs), measurementsContract.address);
-            await storage.addMeasurement(measurement1);
-            await storage.addMeasurement(measurement1);
-            await storage.addMeasurement(measurement2);
-
-            var measurements = await storage.getMeasurements();
-            assert.deepEqual(measurements.sort(), [measurement1,measurement1,measurement2].sort());
-
-            ipfs.stop(done);            
-        });
-
-
-    })
 
     it("should calcualte hash for measurement (form contract and js)", async () => { 
         var hash = await measurementsContract.hashMeasurement("Volume", 22, "delivery", 1491848127, "fmr01", "bch01", accounts[1]);
@@ -88,28 +68,39 @@ contract('MeasurementsOffChain', function(accounts) {
 
     });
 
-    it('ipfs storage should check if device exists', (done)=>{
-        var ipfs = new IPFS();
+    it('MeasurementsStorage storage should throw error if device doesnt exist',async ()=>{
+
+        var storage = new MeasurementsStorage(null, measurementsContract.address);
         
-        ipfs.on('ready', async () => {
-            var storage = new MeasurementsStorage(new IPFSStorage(ipfs), measurementsContract.address);
-            await storage.addMeasurement(invalid_measurment);
+        try{
+            await storage.validateMeasurement(await invalid_measurment.encode());
+            assert(false, 'Error expected');
+        }
+        catch(err){
+            assert.equal(err.message,'No device on address list');
+        }
+    });
 
-            try{
-                await storage.getMeasurements();
-                assert(false, 'Error expected');
-            }
-            catch(err){
-                assert.equal(err.message,'No device on address list');
-            }
-            finally{
-                ipfs.stop(done); 
-            }
-            
+    it('MeasurementsStorage storage should throw error if wrong hash',async ()=>{
 
-                       
-        });
-    })
+        var storage = new MeasurementsStorage(null, measurementsContract.address);
+        var result = await measurement1.encode();
+        result[7]='invalid_hash';
+        
+        try{
+            await storage.validateMeasurement(result);
+            assert(false, 'Error expected');
+        }
+        catch(err){
+            assert.equal(err.message,'Wrong hash or not signed');
+        }
+    });
+
+
+    it('MeasurementsStorage storage should check if device exists', async ()=>{
+        var storage = new MeasurementsStorage(null, measurementsContract.address);
+        await storage.validateMeasurement(await Measurement.encodeMultiple([measurement1,measurement2]));    
+    });
 
     it('should verify correct hash', async ()=>{
         var result = await Measurement.encodeMultiple(example_measurements);
