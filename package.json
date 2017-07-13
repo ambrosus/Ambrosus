@@ -12,10 +12,10 @@
     "through2": "^2.0.3"
   },
   "devDependencies": {
-    "bignumber.js": "^4.0.2"
+    "bignumber.js": "^4.0.2",
+    "mocha": "^3.4.2"
   },
   "scripts": {
-    
     "test": "mocha ./storage-test && truffle test"
   },
   "repository": {
