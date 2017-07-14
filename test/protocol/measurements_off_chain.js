@@ -2,6 +2,7 @@
 
 const abi = require("../../lib/ABI.js");
 const Measurement = require("../../lib/Measurement.js");
+const MeasurementsStorage = require("../../lib/MeasurementsStorage.js");
 const testutils = require("../testutils.js");
 const BigNumber = require('bignumber.js');
 const Devices = artifacts.require("./protocol/Measurements/Devices.sol");
@@ -65,6 +66,37 @@ contract('MeasurementsOffChain', function(accounts) {
         var result = await invalid_measurment.encode();
         assert.isNotOk(await measurementsContract.validateAddressList(result));
 
+    });
+
+    it('MeasurementsStorage storage should throw error if device doesnt exist',async ()=>{
+        var storage = new MeasurementsStorage(null, measurementsContract.address);
+        
+        try{
+            await storage.validateMeasurement(await invalid_measurment.encode());
+            assert(false, 'Error expected');
+        }
+        catch(err){
+            assert.equal(err.message,'Some of the measurements were done by unauthorized devices.');
+        }
+    });
+
+    it('MeasurementsStorage storage should throw error if wrong hash',async ()=>{
+        var storage = new MeasurementsStorage(null, measurementsContract.address);
+        var result = await measurement1.encode();
+        result[7]='invalid_hash';
+        
+        try{
+            await storage.validateMeasurement(result);
+            assert(false, 'Error expected');
+        }
+        catch(err){
+            assert.equal(err.message,'Some of the measurements have invalid signatures.');
+        }
+    });
+
+    it('MeasurementsStorage storage not throw if hash ok', async ()=>{
+        var storage = new MeasurementsStorage(null, measurementsContract.address);
+        await storage.validateMeasurement(await Measurement.encodeMultiple([measurement1,measurement2]));    
     });
 
     it('should verify correct hash', async ()=>{

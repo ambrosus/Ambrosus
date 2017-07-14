@@ -7,13 +7,15 @@
     "test": "test"
   },
   "dependencies": {
-    "ethereumjs-util": "^5.1.2"
+    "ethereumjs-util": "^5.1.2",
+    "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git"
   },
   "devDependencies": {
-    "bignumber.js": "^4.0.2"
+    "bignumber.js": "^4.0.2",
+    "mocha": "^3.4.2"
   },
   "scripts": {
-    "test": "truffle test"
+    "test": "mocha ./storage-test && truffle test"
   },
   "repository": {
     "type": "git",
