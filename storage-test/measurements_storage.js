@@ -12,13 +12,13 @@ describe('MeasurementsStorage', function() {
     
     beforeEach(()=>ipfs = new IPFS());    
 
-    it("should save and restore measurements",  (done) => {
+    it("should save and get measurements",  (done) => {
         ipfs.on('ready', async () => {
             var storage = new MeasurementsStorage(await IPFSMap.create(ipfs));
-
             await storage.addMeasurement(measurement1);
             await storage.addMeasurement(measurement1);
             await storage.addMeasurement(measurement2);
+
             var measurements = await storage.doGetMeasurements();
             var expected = [measurement1,measurement1,measurement2].sort();
 
@@ -46,10 +46,10 @@ describe('MeasurementsStorage', function() {
         ipfs.on('ready', async () => {
             var ipfsMap = await IPFSMap.create(ipfs);
             var storage = new MeasurementsStorage(ipfsMap);
-
             await storage.addMeasurement(measurement1);
             await storage.addMeasurement(measurement1);
             await storage.addMeasurement(measurement2);
+            
             ipfsMap = await IPFSMap.createFromHash(ipfs, ipfsMap.getOwnHash());
             var measurements = await new MeasurementsStorage(ipfsMap).doGetMeasurements();
             var expected = [measurement1,measurement1,measurement2].sort();

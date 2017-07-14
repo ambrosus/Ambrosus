@@ -3,9 +3,9 @@ const IPFSMap = require("../lib/IPFSMap.js");
 const assert = require('assert')
 
 
-describe('IPFSStorage', function() {
+describe('IPFSMap', function() {
 
-    it("adding to catalog", (done) => {
+    it("add an element", (done) => {
         var ipfs = new IPFS();
         ipfs.on('ready', async () => {
             var map = await IPFSMap.create(ipfs);
