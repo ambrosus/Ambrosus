@@ -1,12 +1,13 @@
 const Market = require("../../lib/Market.js");
 const Offer = require('../../lib/Offer.js');
-const OfferFactory= require('../../lib/OfferFactory.js');
-const MarketFactory= require('../../lib/MarketFactory.js');
+const OfferRepository = require('../../lib/OfferRepository.js');
+const MarketRepository = require('../../lib/MarketRepository.js');
 const MarketContract = artifacts.require("./protocol/Market/Market.sol");
 const OfferContract = artifacts.require("./protocol/Market/Offer.sol");
 
 
 contract('Market Interface', function(accounts) {
+  var offerRepo, marketRepo, market;
   
   let testOffer = {
     name:'AAA',
@@ -21,31 +22,34 @@ contract('Market Interface', function(accounts) {
     validatorAddress: accounts[1],
   };
 
-  it('should add and get offer', async () => {
-    var market = await new MarketFactory(MarketContract).create(accounts[0]);
-    await new OfferFactory(OfferContract).saveOffer(market.getMarketAddress(), testOffer);
+  beforeEach(async ()=>{
+    offerRepo = new OfferRepository(OfferContract);
+    marketRepo = new MarketRepository(MarketContract);
+    market = await marketRepo.create(accounts[0]);
+  })
 
-    var offers = await market.getOffers(new OfferFactory(OfferContract));
+  it('should add and get offer', async () => {     
+    await offerRepo.save(market.getAddress(), testOffer);
+
+    var offers = await offerRepo.getAllFromMarket(market);
 
     assert.deepEqual(offers[0], testOffer);
   });
 
   it('should get contract from address', async () => {
-    var market = await new MarketFactory(MarketContract).create(accounts[0]);
-    await new OfferFactory(OfferContract).saveOffer(market.getMarketAddress(), testOffer);
-    var market2 = await new MarketFactory(MarketContract).getAtAddress(market.getMarketAddress());
+    await offerRepo.save(market.getAddress(), testOffer);
+    var market2 = await marketRepo.fromAddress(market.getAddress());
 
-    var offers = await market.getOffers(new OfferFactory(OfferContract));
-    var offers2 = await market.getOffers(new OfferFactory(OfferContract));
+    var offers = await offerRepo.getAllFromMarket(market);
+    var offers2 = await offerRepo.getAllFromMarket(market2);
 
     assert.deepEqual(offers, offers2);
   });
 
   it('should work with partial information', async () => {
-    var market = await new MarketFactory(MarketContract).create(accounts[0]);
-    await new OfferFactory(OfferContract).saveOffer(market.getMarketAddress(), {name: 'aaa', seller: accounts[0]})
+    await offerRepo.save(market.getAddress(), {name: 'aaa', seller: accounts[0]});
 
-    var offers = await market.getOffers(new OfferFactory(OfferContract));
+    var offers = await offerRepo.getAllFromMarket(market);
 
     assert.equal(offers[0].name, 'aaa');
   });
