@@ -57,7 +57,6 @@ describe('MeasurementsStorage', function() {
             assert.deepEqual(measurements.sort(), expected);
 
             ipfs.stop(done);
-        });
-        
+        });        
     });
 });
