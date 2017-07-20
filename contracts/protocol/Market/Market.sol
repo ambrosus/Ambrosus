@@ -7,15 +7,15 @@ contract Market{
 
 	Offer[] products;
 
-	function productCount() constant returns (uint){
+	function productCount() constant returns (uint) {
 		return products.length;
 	}
 
-	function productAt(uint i) constant returns (Offer){
+	function productAt(uint i) constant returns (Offer) {
 		return products[i];
 	}
 	
-	function push(Offer offer){
+	function push(Offer offer) {
 		products.push(offer);
 	}
 }
