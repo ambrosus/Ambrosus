@@ -20,8 +20,6 @@ describe('IPFSMap', function() {
             assert.deepEqual(links.map((l)=>l.multihash).sort(), [hash1,hash2].sort());
 
             ipfs.stop(done);
-        });
-        
+        });        
     });
-
 });

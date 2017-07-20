@@ -8,40 +8,55 @@ import "../Utils/Ownable.sol";
 
 contract Offer is Ownable {
 
-	string public name;
+    string public name;
 
-	bytes32 public origin;
-	address public seller;
+    bytes32 public origin;
+    address public seller;
+    bytes32 public imageHash;
 
-	uint constant priceDecimals = 2;
-	uint constant weightDecimals = 2;
-	uint public packageWeight;
-	uint public pricePerUnit;
+    uint constant priceDecimals = 2;
+    uint constant weightDecimals = 2;
+    uint public packageWeight;
+    uint public pricePerUnit;
 
-	Measurements public measurments;
-	Requirements public requirements;
-	Validator public validator;
+    Measurements public measurements;
+    Requirements public requirements;
+    Validator public validator;
 
-	function Offer(
-		uint _price,
-		uint _packageWeight,
-		bytes32 _origin,
-		Market _market,
-		Measurements _measurments,
-		Requirements _requirements,
-		Validator _validator)
-	{		
-		pricePerUnit = _price;
-		packageWeight = _packageWeight;
-		origin = _origin;
-		seller = msg.sender;
-		measurments = _measurments;
-		requirements = _requirements;
-		validator = _validator;
-		_market.push(this);
-	}
+    function Offer(
+        string _name,
+        uint _price,
+        uint _packageWeight,
+        bytes32 _origin,
+        bytes32 _imageHash,
+        Market _market,
+        Measurements _measurements,
+        Requirements _requirements,
+        Validator _validator)
+    {       
+        name = _name;
+        pricePerUnit = _price;
+        packageWeight = _packageWeight;
+        origin = _origin;
+        imageHash = _imageHash;
+        seller = msg.sender;
+        measurements = _measurements;
+        requirements = _requirements;
+        validator = _validator;
+        _market.push(this);
+    }
 
-	function pricePerPackage() constant returns (uint){
-		return pricePerUnit*packageWeight/100;
-	}
+    function pricePerPackage() constant returns (uint) {
+        return pricePerUnit*packageWeight/100;
+    }
+
+    function getAttributes() constant returns (string, bytes32, address,
+                                               bytes32, uint, uint, uint,
+                                               Measurements, Requirements, Validator) 
+    {
+        return (name, origin, seller,
+                imageHash, packageWeight, 
+                pricePerUnit, pricePerPackage(),
+                measurements, requirements, validator);
+    }
 }

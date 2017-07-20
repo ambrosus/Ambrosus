@@ -25,8 +25,7 @@ describe('MeasurementsStorage', function() {
             assert.deepEqual(measurements.sort(), expected);
 
             ipfs.stop(done);            
-        });
-        
+        });        
     });
 
     it("should return empty array",  (done) => {
@@ -38,8 +37,7 @@ describe('MeasurementsStorage', function() {
             assert.deepEqual(measurements, []);
 
             ipfs.stop(done);            
-        });
-        
+        });        
     });
 
     it("Should get IPFSMap from own hash", (done) => {
@@ -57,7 +55,6 @@ describe('MeasurementsStorage', function() {
             assert.deepEqual(measurements.sort(), expected);
 
             ipfs.stop(done);
-        });
-        
+        });        
     });
 });

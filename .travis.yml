@@ -6,7 +6,9 @@ cache:
   directories:
     - node_modules
 before_script:
-  - npm install -g truffle-expect truffle-config web3
+  - npm install -g truffle-expect
+  - npm install -g truffle-config
+  - npm install -g web3@1.0.0-beta.1
   - npm install -g ethereumjs-testrpc
   - npm install -g truffle
   - npm install
