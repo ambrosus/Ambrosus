@@ -29,6 +29,7 @@ Ambrosus architecture consists of 3 main layers:
 - smart contracts - building blocks of Ambrosus protocol
 - javascript library - that allows to create and operate Ambrosus contracts and objects
 
+![Architecture overview](https://raw.githubusercontent.com/ambrosus/Ambrosus/master/docs/architecture.png "Architecture overview")
 
 All 3 parts are stored in this repository. Following is a description of 3 layers introduced above.
 
@@ -88,6 +89,11 @@ Or to create a new market:
 ```
     await marketRepo.create(accounts[0]);
 ```
+
+Below is an example architecture overview for two apps build in top of Ambrosus protocol.
+
+![Example architecture overview](https://raw.githubusercontent.com/ambrosus/Ambrosus/master/docs/architecture%20example.png "Example architecture overview")
+
 
 Detailed documentation coming soon.
 
