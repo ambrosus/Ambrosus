@@ -7,7 +7,23 @@ This repository contains smart contracts constituting Ambrosus protocol, in part
 - ICO Contribution contract
 - Smart contracts constituting Ambrosus protocol itself
 
-## Installation and testing
+## Installation and use
+
+To add ambrosus to your project:
+
+```
+npm i -S ambrosus
+```
+
+And import to module in your application:
+
+```
+import ambrosus from 'ambrosus'
+```
+
+
+
+## Contribution
 
 1. Clone repository
     ```
