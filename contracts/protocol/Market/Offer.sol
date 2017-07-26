@@ -12,7 +12,7 @@ contract Offer is Ownable {
 
     bytes32 public origin;
     address public seller;
-    bytes32 public imageHash;
+    string public imageHash;
 
     uint constant priceDecimals = 2;
     uint constant weightDecimals = 2;
@@ -28,7 +28,7 @@ contract Offer is Ownable {
         uint _price,
         uint _packageWeight,
         bytes32 _origin,
-        bytes32 _imageHash,
+        string _imageHash,
         Market _market,
         Measurements _measurements,
         Requirements _requirements,
@@ -51,7 +51,7 @@ contract Offer is Ownable {
     }
 
     function getAttributes() constant returns (string, bytes32, address,
-                                               bytes32, uint, uint, uint,
+                                               string, uint, uint, uint,
                                                Measurements, Requirements, Validator) 
     {
         return (name, origin, seller,

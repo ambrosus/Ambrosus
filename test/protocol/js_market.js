@@ -15,7 +15,7 @@ contract('Market Interface', function(accounts) {
     packageWeight: 100,
     pricePerUnit: 100,
     pricePerPackage: 100,
-    imageHash: 'Qmsadasdasdasdsadas',
+    imageHash: 'QmVPMUYVooLw9XRgEWFnKZLyaZeWBM18EX7X3g6hrQBDqB',
     seller: accounts[0],
     measurementsAddress: accounts[1],
     requirementsAddress: accounts[1],
@@ -47,10 +47,10 @@ contract('Market Interface', function(accounts) {
   });
 
   it('should work with partial information', async () => {
-    await offerRepo.save(market.getAddress(), {name: 'aaa', seller: accounts[0]});
+    await offerRepo.save(market.getAddress(), {origin: 'aaa', seller: accounts[0]});
 
     var offers = await offerRepo.getAllFromMarket(market);
 
-    assert.equal(offers[0].name, 'aaa');
+    assert.equal(offers[0].origin, 'aaa');
   });
 });
