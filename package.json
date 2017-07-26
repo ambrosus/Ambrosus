@@ -1,6 +1,6 @@
 {
   "name": "ambrosus",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "description": "Smart contracts building Amber protocol.",
   "main": "lib/index.js",
   "directories": {
@@ -17,7 +17,8 @@
     "mocha": "^3.4.2"
   },
   "scripts": {
-    "test": "mocha ./storage-test && truffle test"
+    "test": "mocha ./storage-test && truffle test",
+    "build": "truffle build"
   },
   "repository": {
     "type": "git",
