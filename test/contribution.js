@@ -215,8 +215,8 @@ contract('Contribiution', function(accounts) {
         it('Test token transferFrom in time', async () => {
             let expectedBalance = (await amber.balanceOf(accounts[1])).toNumber() + 1000;
             await amber.approve(accounts[1], 1000);
-
-            var allowed = await amber.allowance(accounts[0], accounts[1], 1000);
+            
+            var allowed = await amber.allowance(accounts[0], accounts[1]);
             assert.equal(allowed, 1000);
 
             await amber.transfer(accounts[1], 1000, {from: accounts[0]});
