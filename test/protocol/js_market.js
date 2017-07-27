@@ -10,11 +10,12 @@ contract('Market Interface', function(accounts) {
   var offerRepo, marketRepo, market;
   
   let testOffer = {
-    name:'AAA',
+    name: 'AAA',
     origin: 'BBB',
-    packageWeight: 100,
+    category: 'Fish',
+    packageWeight: 200,
     pricePerUnit: 100,
-    pricePerPackage: 100,
+    pricePerPackage: 200,
     imageHash: 'QmVPMUYVooLw9XRgEWFnKZLyaZeWBM18EX7X3g6hrQBDqB',
     seller: accounts[0],
     measurementsAddress: accounts[1],

@@ -11,6 +11,7 @@ contract Offer is Ownable {
     string public name;
 
     bytes32 public origin;
+    bytes32 public category;
     address public seller;
     string public imageHash;
 
@@ -25,10 +26,11 @@ contract Offer is Ownable {
 
     function Offer(
         string _name,
-        uint _price,
-        uint _packageWeight,
         bytes32 _origin,
+        bytes32 _category,
         string _imageHash,
+        uint _packageWeight,
+        uint _price,
         Market _market,
         Measurements _measurements,
         Requirements _requirements,
@@ -38,6 +40,7 @@ contract Offer is Ownable {
         pricePerUnit = _price;
         packageWeight = _packageWeight;
         origin = _origin;
+        category = _category;
         imageHash = _imageHash;
         seller = msg.sender;
         measurements = _measurements;
@@ -50,11 +53,11 @@ contract Offer is Ownable {
         return pricePerUnit*packageWeight/100;
     }
 
-    function getAttributes() constant returns (string, bytes32, address,
+    function getAttributes() constant returns (string, bytes32, bytes32, address,
                                                string, uint, uint, uint,
                                                Measurements, Requirements, Validator) 
     {
-        return (name, origin, seller,
+        return (name, origin, category, seller,
                 imageHash, packageWeight, 
                 pricePerUnit, pricePerPackage(),
                 measurements, requirements, validator);
