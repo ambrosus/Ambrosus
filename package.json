@@ -1,6 +1,6 @@
 {
   "name": "ambrosus",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Smart contracts building Amber protocol.",
   "main": "lib/index.js",
   "directories": {
