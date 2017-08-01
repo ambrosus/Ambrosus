@@ -62,13 +62,14 @@ Eg. to create a new offer on the market on can use following code:
 
 ```
     let exampleOffer = {
-        name:'AAA',
-        origin: 'BBB',
+        name: 'Tune',
+        origin: 'Japan',
+        category: 'Fish',
         packageWeight: 100,
         pricePerUnit: 100,
         pricePerPackage: 100,
-        imageHash: 'Qmsadasdasdasdsadas', //Image hash on IPFS
-        seller: accounts[0],
+        imageHash: 'QmWWQSuPMS6aXCbZKpEjPHPUZN2NjB3YrhJTHsV4X3vb2t', //Image hash on IPFS
+        seller: ..., // Seller wallet address 
         measurementsAddress: ..., // Measurements contract address
         requirementsAddress: ..., // Requirements contract address
         validatorAddress: ..., // Validator contract address
@@ -81,7 +82,7 @@ And to put in on the market:
     offerRepo = new OfferRepository(OfferContract);
     marketRepo = new MarketRepository(MarketContract);
     market = ...;
-    await offerRepo.save(market.getAddress(), testOffer);
+    await offerRepo.save(market.getAddress(), exampleOffer);
 ```
 
 Or to create a new market:
