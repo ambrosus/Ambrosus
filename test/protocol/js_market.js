@@ -1,5 +1,3 @@
-const Market = require("../../lib/Market.js");
-const Offer = require('../../lib/Offer.js');
 const OfferRepository = require('../../lib/OfferRepository.js');
 const MarketRepository = require('../../lib/MarketRepository.js');
 

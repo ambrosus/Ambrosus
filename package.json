@@ -1,6 +1,6 @@
 {
   "name": "ambrosus",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Smart contracts building Amber protocol.",
   "main": "lib/index.js",
   "directories": {
@@ -11,7 +11,7 @@
     "ethereumjs-util": "^5.1.2",
     "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
     "truffle-contract": "^2.0.1",
-    "web3": "^1.0.0-beta.12"
+    "web3": "^1.0.0-beta.13"
   },
   "devDependencies": {
     "bignumber.js": "^4.0.2",
