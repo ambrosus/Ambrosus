@@ -29,9 +29,9 @@ contract('Market Interface', function(accounts) {
     market = await marketRepo.create(accounts[0]);
   })
 
-  it('should add and get offer', async () => {     
+  it('should add and get offer', async () => {   
     await offerRepo.save(market.getAddress(), testOffer);
-
+    
     var offers = await offerRepo.getAllFromMarket(market);
 
     assert.deepEqual(offers[0], testOffer);
