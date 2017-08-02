@@ -1,10 +1,14 @@
-const Amber = artifacts.require("./Amber.sol");
-const agreementArtifacts = artifacts.require('./protocol/Agreement/EscrowedAgreement.sol');
+const Token = artifacts.require("./protocol/Utils/MockToken.sol");
+const OfferRepository = require('../../lib/OfferRepository.js');
+const MarketRepository = require('../../lib/MarketRepository.js');
+const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
+const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
+const AgreementArtifacts = artifacts.require('./protocol/Agreement/EscrowedAgreement.sol');
 const Agreement = require('../../lib/Agreement');
 
 
 contract('Delivery Interface', function(accounts) {
-  var delivery, amber;
+  var delivery, token;
 
   let testOffer = {
     name: 'AAA',
@@ -20,34 +24,39 @@ contract('Delivery Interface', function(accounts) {
   };
 
   beforeEach(async () => {
+    var market = await (new MarketRepository(MarketArtifacts)).create(accounts[0]);
+    var offer = await (new OfferRepository(OfferArtifacts)).save(market.marketContract.address, testOffer);
+    token = await Token.new([web3.eth.accounts[0]], [1000]);
+    agreement = new Agreement(offer.address, 3, token.address, AgreementArtifacts, Token);
+  });
 
-    agreement = new Agreement(testOffer, 3, agreementArtifacts, Amber);
-    let result = await web3.eth.getBlock('earliest');
-    let startTime = result.timestamp;
-    amber = await Amber.new(startTime, startTime);
-    await amber.mintLiquidToken(web3.eth.accounts[0], 1000);
+  it('should setup buyer & seller', async () => {
+    var agreementContract = await agreement.initiateAgreement();
+
+    assert.deepEqual(await agreementContract.buyer(), accounts[0]);
+    assert.deepEqual(await agreementContract.seller(), accounts[1]);
   });
 
   it('should escrow', async () => {
-    var agreementContract = await agreement.initiateAgreement(amber.address);
+    var agreementContract = await agreement.initiateAgreement();
 
-    assert.equal(await amber.balanceOf(accounts[0]), 400);
-    assert.equal(await amber.balanceOf(agreementContract.address), 600);
+    assert.equal(await token.balanceOf(accounts[0]), 400);
+    assert.equal(await token.balanceOf(agreementContract.address), 600);
   });
 
   it('should accept agreement', async () => {
-    var agreementContract = await agreement.initiateAgreement(amber.address);
+    var agreementContract = await agreement.initiateAgreement();
     await agreement.accept(agreementContract);
 
-    assert.equal(await amber.balanceOf(accounts[0]), 400);
-    assert.equal(await amber.balanceOf(accounts[1]), 600);
+    assert.equal(await token.balanceOf(accounts[0]), 400);
+    assert.equal(await token.balanceOf(accounts[1]), 600);
   });
 
   it('should reject agreement', async () => {
-    var agreementContract = await agreement.initiateAgreement(amber.address);
+    var agreementContract = await agreement.initiateAgreement();
     await agreement.reject(agreementContract);
 
-    assert.equal(await amber.balanceOf(accounts[0]), 1000);
-    assert.equal(await amber.balanceOf(accounts[1]), 0);
+    assert.equal(await token.balanceOf(accounts[0]), 1000);
+    assert.equal(await token.balanceOf(accounts[1]), 0);
   });
 });

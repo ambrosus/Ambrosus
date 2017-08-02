@@ -5,14 +5,13 @@ import "../../dependencies/ERC20Protocol.sol";
 import "../Measurements/MeasurementsOnChain.sol";
 import "../Requirements/Requirements.sol";
 import "../Validator/Validator.sol";
-import "../Parties/TokenEscrowedParties.sol";
-
+import "../Market/Offer.sol";
 
 contract EscrowedAgreement is Agreement {
 
-    address buyer;
-    address seller;
-    uint amount;
+    address public buyer;
+    address public seller;
+    uint public amount;
     ERC20Protocol token;
 
     modifier onlyBuyer() {
@@ -20,15 +19,15 @@ contract EscrowedAgreement is Agreement {
         _;
     }
 
-    function EscrowedAgreement(ERC20Protocol _token, Requirements, Validator, Measurements) {
+    function EscrowedAgreement(ERC20Protocol _token, Offer _offer, uint _quantity) {
         buyer = msg.sender;
         token = _token;
+        amount = _offer.pricePerPackage()*_quantity;
+        seller = _offer.seller();
     }
 
-    function escrowWithSeller(address _seller, uint _amount) onlyBuyer {
-        seller = _seller;
-        amount = _amount;
-        assert(token.transferFrom(buyer, this, _amount));
+    function escrowWithSeller() onlyBuyer {
+        assert(token.transferFrom(buyer, this, amount));
     }
 
     function approve() onlyBuyer {
