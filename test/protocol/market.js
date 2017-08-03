@@ -20,7 +20,7 @@ contract('Market', function (accounts) {
 	beforeEach(async()=>{	
 		market = await Market.new();
 		measurements = await MeasurementsOnChain.new();
-		requirements = await RangeRequirements.new();
+		requirements = await RangeRequirements.new("name", market.address);
 		validator = await RangeValidator.new(measurements.address, requirements.address);
 		let attributes = ["Volume", "Certified", "Lactose", "Fat"];
      	let types = [IntegerType, BooleanType, IntegerType, IntegerType];
@@ -34,16 +34,23 @@ contract('Market', function (accounts) {
 		assert.equal(await market.productCount(), 0);
 	});
 	
-	it('should add offers', async ()=>{
+	it('should add offers', async () => {
 		await Offer.new("Fish","Norway","shark","Qma",40,300,market.address,measurements.address,requirements.address,validator.address);
 		await Offer.new("Fish","Norway","shark","Qma",40,300,market.address,measurements.address,requirements.address,validator.address);
 
 		var offer = await Offer.at(await market.productAt(1));
-		var req = RangeRequirements.at(await offer.requirements());
+		var offerRequirements = RangeRequirements.at(await offer.requirements());
 
 		assert.equal(await market.productCount(), 2);
 		assert.equal(await offer.pricePerUnit(), 300)
-		assert.equal((await req.getAttribute(3))[4], 342);
+		assert.equal((await offerRequirements.getAttribute(3))[4], 342);
 	});
+
+	it('should add requirements', async () => {		
+		var marketRequirements = await RangeRequirements.at(await market.requirementsAt(0));
+
+		assert.equal(await market.requirementsCount(), 1);
+		assert.equal((await marketRequirements.getAttribute(3))[4], 342);
+	})
 });
 

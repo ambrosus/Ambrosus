@@ -4,6 +4,7 @@ const testutils = require("../testutils.js");
 const MeasurementsOnChain = artifacts.require("./protocol/Measurements/MeasurementsOnChain.sol");
 const RangeRequirements = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
 const RangeValidator = artifacts.require("./protocol/Validator/RangeValidator.sol");
+const Market = artifacts.require("./protocol/Market/Market.sol");
 
 
 var measurements;
@@ -17,7 +18,7 @@ contract('RangeValidator', function(accounts) {
 
     it('Deploy contracts', async () => {
       measurements = await MeasurementsOnChain.new();
-      requirements = await RangeRequirements.new();
+      requirements = await RangeRequirements.new('test', (await Market.new()).address);
 
       rangeValidator = await RangeValidator.new(measurements.address, requirements.address);
       let attributes = ["Volume", "Certified", "Lactose", "Fat"];

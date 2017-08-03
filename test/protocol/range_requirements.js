@@ -3,6 +3,7 @@
 const assert = require('assert');
 const testutils = require("../testutils.js");
 const RangeRequirements = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
+const Market = artifacts.require("./protocol/Market/Market.sol");
 const BigNumber = require('bignumber.js');
 
 var requirements;
@@ -10,7 +11,7 @@ var requirements;
 contract('RangeRequirements', function(accounts) {
 
     it('Deploy contract', async () => {
-		requirements = await RangeRequirements.new();
+		requirements = await RangeRequirements.new("", (await Market.new()).address);
         await requirements.setAttributes(["Volume", "Color"], [0, 0], [3, 6], [22, 768], [24, 786]);
     });
 

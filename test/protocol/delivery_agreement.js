@@ -7,6 +7,7 @@ const RangeRequirements = artifacts.require("./protocol/Requirements/RangeRequir
 const RangeValidator = artifacts.require("./protocol/Validator/RangeValidator.sol");
 const DeliveryAgreement = artifacts.require("./protocol/Agreement/DeliveryAgreement.sol");
 const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties.sol");
+const Market = artifacts.require("./protocol/Market/Market.sol");
 const Amber = artifacts.require("./Amber.sol");
 const BigNumber = require('bignumber.js');
 
@@ -31,7 +32,7 @@ contract('DeliveryAgreement', function(accounts) {
         await amber.mintLiquidToken(accounts[0], 1000);
         assert.equal(await amber.balanceOf(accounts[0]), 1000);        
 
-        requirements = await RangeRequirements.new();        
+        requirements = await RangeRequirements.new('aaa', (await Market.new()).address);        
         await requirements.setAttributes(["Volume", "Color"], [AttributeTypeInteger, AttributeTypeBoolean], [0, 0], [22, 768], [24, 786]);
 
         validator = await RangeValidator.new();

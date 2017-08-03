@@ -1,8 +1,9 @@
 pragma solidity ^0.4.11;
 
-import "../Requirements/Requirements.sol";
+import "./Requirements.sol";
+import "../Market/Market.sol";
 
-contract RangeRequirements is Requirements {
+contract RangeRequirements is Requirements{
 
     enum AttributeType { Integer, Boolean }
 
@@ -15,6 +16,8 @@ contract RangeRequirements is Requirements {
     }
 
 	Attribute [] attributes;
+
+    function RangeRequirements(bytes32 _name, Market _market) Requirements(_name, _market){ }
 
     function setAttributes(bytes32 [] _identifers, AttributeType [] _attributeTypes, uint [] _decimals, int [] _mins, int [] _maxs) onlyUnlocked {
         assert(_identifers.length == _mins.length);
