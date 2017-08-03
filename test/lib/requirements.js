@@ -3,51 +3,50 @@ const RequirementsRepository = require('../../lib/RequirementsRepository');
 const RequirementsArtifacts = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
 
 contract('Requirements Interface', function(accounts) {
+
+  var requirementsRepository;
   
-  let testAttributes = [
-    {
+  let testAttributes = [{
       id: "Volume",
       type: 0,
       decimals: 3,
       min: 22,
       max: 24
-    },
-    {
+    }, {
       id: "Color",
       type: 0,
       decimals: 6,
       min: 768,
       max: 769
-    }
-  ];
+  }];
 
   beforeEach(async () => {
-    reqRepo = new RequirementsRepository(RequirementsArtifacts);
+    requirementsRepository = new RequirementsRepository(RequirementsArtifacts);
   });
 
   it('should add and get attributes', async () => {   
-    var req = await reqRepo.create(testAttributes);
+    var requirement = await requirementsRepository.create(testAttributes);
 
-    var attrs = await req.getAttributes();
+    var attributes = await requirement.getAttributes();
 
-    assert.deepEqual(attrs, testAttributes);
+    assert.deepEqual(attributes, testAttributes);
   });
 
   it('should get contract from address', async () => {
-    var req1 = await reqRepo.create(testAttributes);
-    var req2 = await reqRepo.fromAddress(req1.getAddress());
+    var requirementOriginal = await requirementsRepository.create(testAttributes);
+    var requirementAcquired = await requirementsRepository.fromAddress(requirementOriginal.getAddress());
 
-    var attrs1 = await req1.getAttributes();
-    var attrs2 = await req2.getAttributes();
+    var attributesExpected = await requirementOriginal.getAttributes();
+    var attributesActual = await requirementAcquired.getAttributes();
 
-    assert.deepEqual(attrs1, attrs2);
+    assert.deepEqual(attributesExpected, attributesActual);
   });
 
   it('should get attribute by ID', async () => {
-    var req = await reqRepo.create(testAttributes);
+    var req = await requirementsRepository.create(testAttributes);
 
-    var attr = await req.getAttributeById('Color');
+    var attribute = await req.getAttributeById('Color');
 
-    assert.deepEqual(attr, testAttributes[1]);
+    assert.deepEqual(attribute, testAttributes[1]);
   });
 });

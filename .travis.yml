@@ -12,6 +12,7 @@ before_script:
   - npm install -g ethereumjs-testrpc
   - npm install -g truffle
   - npm install
+  - truffle compile
 script:
   - testrpc > testrpc.log &
   - sleep 5
