@@ -4,7 +4,7 @@ const testutils = require("../testutils.js");
 const Market = artifacts.require("./protocol/Market/Market.sol");
 const Offer = artifacts.require("./protocol/Market/Offer.sol");
 const MeasurementsOnChain = artifacts.require("./protocol/Measurements/MeasurementsOnChain.sol");
-const RangeRequirements = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
+const RangeRequirementsFactory = artifacts.require("./protocol/Requirements/RangeRequirementsFactory.sol");
 const RangeValidator = artifacts.require("./protocol/Validator/RangeValidator.sol");
 const DeliveryAgreement = artifacts.require("./protocol/Agreement/DeliveryAgreement.sol");
 const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties");
@@ -20,7 +20,7 @@ contract('Market', function (accounts) {
 	beforeEach(async()=>{	
 		market = await Market.new();
 		measurements = await MeasurementsOnChain.new();
-		requirements = await RangeRequirements.new("name", market.address);
+		requirements = await RangeRequirementsFactory.new("name", market.address);
 		validator = await RangeValidator.new(measurements.address, requirements.address);
 		let attributes = ["Volume", "Certified", "Lactose", "Fat"];
      	let types = [IntegerType, BooleanType, IntegerType, IntegerType];
@@ -39,7 +39,7 @@ contract('Market', function (accounts) {
 		await Offer.new("Fish","Norway","shark","Qma",40,300,market.address,measurements.address,requirements.address,validator.address);
 
 		var offer = await Offer.at(await market.productAt(1));
-		var offerRequirements = RangeRequirements.at(await offer.requirements());
+		var offerRequirements = RangeRequirementsFactory.at(await offer.requirements());
 
 		assert.equal(await market.productCount(), 2);
 		assert.equal(await offer.pricePerUnit(), 300)
@@ -47,7 +47,7 @@ contract('Market', function (accounts) {
 	});
 
 	it('should add requirements', async () => {		
-		var marketRequirements = await RangeRequirements.at(await market.requirementsAt(0));
+		var marketRequirements = await RangeRequirementsFactory.at(await market.requirementsAt(0));
 
 		assert.equal(await market.requirementsCount(), 1);
 		assert.equal((await marketRequirements.getAttribute(3))[4], 342);

@@ -1,7 +1,6 @@
 pragma solidity ^0.4.11;
 
 import "./Requirements.sol";
-import "../Market/Market.sol";
 
 contract RangeRequirements is Requirements{
 
@@ -17,7 +16,7 @@ contract RangeRequirements is Requirements{
 
 	Attribute [] attributes;
 
-    function RangeRequirements(bytes32 _name, Market _market) Requirements(_name, _market){ }
+    function RangeRequirements(bytes32 _name) Requirements(_name) { }
 
     function setAttributes(bytes32 [] _identifers, AttributeType [] _attributeTypes, uint [] _decimals, int [] _mins, int [] _maxs) onlyUnlocked {
         assert(_identifers.length == _mins.length);

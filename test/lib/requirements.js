@@ -1,6 +1,6 @@
 const Requirements = require("../../lib/Requirements");
 const RequirementsRepository = require('../../lib/RequirementsRepository');
-const RequirementsArtifacts = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
+const RequirementsArtifacts = artifacts.require("./protocol/Requirements/RangeRequirementsFactory.sol");
 const MarketRepository = require('../../lib/MarketRepository');
 const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
 
