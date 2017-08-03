@@ -24,8 +24,8 @@ contract('Requirements Interface', function(accounts) {
 
   beforeEach(async () => {
     requirementsRepository = new RequirementsRepository(RequirementsArtifacts);
-    market = (await new MarketRepository(MarketArtifacts).create(accounts[0])).marketContract;
-    requirement = await requirementsRepository.create("name", market.address, testAttributes);
+    market = (await new MarketRepository(MarketArtifacts).create(accounts[0]));
+    requirement = await requirementsRepository.create("name", market.getAddress(), testAttributes);
   });
 
   it('should add and get attributes', async () => {
@@ -49,4 +49,13 @@ contract('Requirements Interface', function(accounts) {
 
     assert.deepEqual(attribute, testAttributes[1]);
   });
+
+  it('should get all from market', async () => {
+    await requirementsRepository.create("name2", market.getAddress(), testAttributes);
+
+    var result = await requirementsRepository.getAllFromMarket(market);
+
+    assert.equal(result.length, 2);
+    assert.deepEqual(await result[1].getName(), "name2");
+  })
 });
