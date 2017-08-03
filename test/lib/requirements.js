@@ -1,10 +1,12 @@
 const Requirements = require("../../lib/Requirements");
 const RequirementsRepository = require('../../lib/RequirementsRepository');
-const RequirementsArtifacts = artifacts.require("./protocol/Requirements/RangeRequirements.sol");
+const RequirementsArtifacts = artifacts.require("./protocol/Requirements/RangeRequirementsFactory.sol");
+const MarketRepository = require('../../lib/MarketRepository');
+const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
 
 contract('Requirements Interface', function(accounts) {
 
-  var requirementsRepository;
+  var requirementsRepository, market, requirement;
   
   let testAttributes = [{
       id: "Volume",
@@ -22,30 +24,28 @@ contract('Requirements Interface', function(accounts) {
 
   beforeEach(async () => {
     requirementsRepository = new RequirementsRepository(RequirementsArtifacts);
+    market = (await new MarketRepository(MarketArtifacts).create(accounts[0])).marketContract;
+    requirement = await requirementsRepository.create("name", market.address, testAttributes);
   });
 
-  it('should add and get attributes', async () => {   
-    var requirement = await requirementsRepository.create(testAttributes);
-
+  it('should add and get attributes', async () => {
     var attributes = await requirement.getAttributes();
 
     assert.deepEqual(attributes, testAttributes);
+    assert.deepEqual(await requirement.getName(), "name");
   });
 
   it('should get contract from address', async () => {
-    var requirementOriginal = await requirementsRepository.create(testAttributes);
-    var requirementAcquired = await requirementsRepository.fromAddress(requirementOriginal.getAddress());
+    var requirementAcquired = await requirementsRepository.fromAddress(requirement.getAddress());
 
-    var attributesExpected = await requirementOriginal.getAttributes();
+    var attributesExpected = await requirement.getAttributes();
     var attributesActual = await requirementAcquired.getAttributes();
 
     assert.deepEqual(attributesExpected, attributesActual);
   });
 
   it('should get attribute by ID', async () => {
-    var req = await requirementsRepository.create(testAttributes);
-
-    var attribute = await req.getAttributeById('Color');
+    var attribute = await requirement.getAttributeById('Color');
 
     assert.deepEqual(attribute, testAttributes[1]);
   });

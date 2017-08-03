@@ -31,7 +31,7 @@ contract('DeliveryAgreement', function(accounts) {
         await amber.mintLiquidToken(accounts[0], 1000);
         assert.equal(await amber.balanceOf(accounts[0]), 1000);        
 
-        requirements = await RangeRequirements.new();        
+        requirements = await RangeRequirements.new('aaa');        
         await requirements.setAttributes(["Volume", "Color"], [AttributeTypeInteger, AttributeTypeBoolean], [0, 0], [22, 768], [24, 786]);
 
         validator = await RangeValidator.new();
