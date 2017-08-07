@@ -33,7 +33,8 @@ contract('Market Interface', function(accounts) {
     await offerRepo.save(market.getAddress(), testOffer);
 
     var offers = await offerRepo.getAllFromMarket(market);
-
+    delete offers[0].address
+    
     assert.deepEqual(offers[0], testOffer);
   });
 
