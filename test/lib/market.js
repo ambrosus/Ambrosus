@@ -20,7 +20,7 @@ contract('Market Interface', function(accounts) {
     measurementsAddress: accounts[1],
     requirementsAddress: accounts[1],
     validatorAddress: accounts[1],
-    requirementsName: '',
+    quality: '',
   };
 
   beforeEach(async ()=>{
