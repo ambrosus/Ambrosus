@@ -31,4 +31,12 @@ contract Market{
 	function pushRequirements(Requirements _requirements) {
 		requirements.push(_requirements);
 	}
+
+	function getRequirementsByName(bytes32 name) constant returns (Requirements) {
+		for (uint i=0; i<requirements.length; i++) {
+			if (requirements[i].name() == name)
+				return requirements[i];
+		}
+		assert(false);
+	}
 }
