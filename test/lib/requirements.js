@@ -62,7 +62,7 @@ contract('Requirements Interface', function(accounts) {
   it('should get by name from market', async () => {
     await requirementsRepository.create("name2", market.getAddress(), testAttributes);
 
-    var result = await requirementsRepository.findInMarket("name2", market);
+    var result = await requirementsRepository.findQualityByName("name2", market);
 
     assert.deepEqual(await result.getName(), "name2");
     assert.deepEqual(await result.getAttributeById('Color'), testAttributes[1]);
