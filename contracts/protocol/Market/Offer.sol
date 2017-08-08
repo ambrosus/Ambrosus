@@ -46,7 +46,7 @@ contract Offer is Ownable {
         measurements = _measurements;
         requirements = _requirements;
         validator = _validator;
-        _market.push(this);
+        _market.pushOffer(this);
     }
 
     function pricePerPackage() constant returns (uint) {

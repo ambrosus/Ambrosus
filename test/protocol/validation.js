@@ -17,7 +17,7 @@ contract('RangeValidator', function(accounts) {
 
     it('Deploy contracts', async () => {
       measurements = await MeasurementsOnChain.new();
-      requirements = await RangeRequirements.new();
+      requirements = await RangeRequirements.new('test');
 
       rangeValidator = await RangeValidator.new(measurements.address, requirements.address);
       let attributes = ["Volume", "Certified", "Lactose", "Fat"];

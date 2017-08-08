@@ -1,5 +1,9 @@
+const Market = require("../../lib/Market.js");
+const Offer = require('../../lib/Offer.js');
 const OfferRepository = require('../../lib/OfferRepository.js');
 const MarketRepository = require('../../lib/MarketRepository.js');
+const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
+const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
 
 contract('Market Interface', function(accounts) {
   var offerRepo, marketRepo, market;
@@ -16,17 +20,21 @@ contract('Market Interface', function(accounts) {
     measurementsAddress: accounts[1],
     requirementsAddress: accounts[1],
     validatorAddress: accounts[1],
+    quality: '',
   };
 
   beforeEach(async ()=>{
-    offerRepo = new OfferRepository();
-    marketRepo = new MarketRepository();
+    offerRepo = new OfferRepository(OfferArtifacts);
+    marketRepo = new MarketRepository(MarketArtifacts);
     market = await marketRepo.create(accounts[0]);
   })
 
   it('should add and get offer', async () => {   
     await offerRepo.save(market.getAddress(), testOffer);
+
     var offers = await offerRepo.getAllFromMarket(market);
+    delete offers[0].address
+    
     assert.deepEqual(offers[0], testOffer);
   });
 
