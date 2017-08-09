@@ -6,6 +6,7 @@ const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
 const AgreementArtifacts = artifacts.require('./protocol/Agreement/EscrowedAgreement.sol');
 const Agreement = require('../../lib/Agreement');
 
+const HUGE_NUMBER = 10000000000000;
 
 contract('Delivery Interface', function(accounts) {
   var delivery, token, offer, market;
@@ -45,7 +46,7 @@ contract('Delivery Interface', function(accounts) {
   });
 
   it('should catch if not enough tokens', async () => {
-    agreement = new Agreement(offer.address, 10000000000000, token.address, AgreementArtifacts, Token);
+    agreement = new Agreement(offer.address, HUGE_NUMBER, token.address, AgreementArtifacts, Token);
     try {
       var agreementContract = await agreement.initiateAgreement();
       assert(false);
