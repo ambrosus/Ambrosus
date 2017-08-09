@@ -8,10 +8,10 @@ contract Market{
 
 	Offer[] products;
 	Requirements[] requirements;
-	ERC20 token;
+	ERC20 public token;
 
-	function setToken(ERC20 _token) {
-		token = _token;
+	function Market(ERC20 _token) {
+		token = _token; 
 	}
 
 	function productCount() constant returns (uint) {
