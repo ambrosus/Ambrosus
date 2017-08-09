@@ -3,6 +3,7 @@ const Offer = require('../../lib/Offer.js');
 const OfferRepository = require('../../lib/OfferRepository.js');
 const MarketRepository = require('../../lib/MarketRepository.js');
 const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
+const MarketFactoryArtifacts = artifacts.require("./protocol/Market/MarketFactory.sol");
 const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
 
 contract('Market Interface', function(accounts) {
@@ -25,8 +26,8 @@ contract('Market Interface', function(accounts) {
 
   beforeEach(async ()=>{
     offerRepo = new OfferRepository(OfferArtifacts);
-    marketRepo = new MarketRepository(MarketArtifacts);
-    market = await marketRepo.create(accounts[0]);
+    marketRepo = new MarketRepository(MarketArtifacts, MarketFactoryArtifacts);
+    market = await marketRepo.create();
   })
 
   it('should add and get offer', async () => {   

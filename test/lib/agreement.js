@@ -5,10 +5,11 @@ const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
 const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
 const AgreementArtifacts = artifacts.require('./protocol/Agreement/EscrowedAgreement.sol');
 const Agreement = require('../../lib/Agreement');
+const testUtils = require('../testutils.js');
+const PACKAGE_COUNT_TOO_MANY = 10000000000000;
 
-
-contract('Delivery Interface', function(accounts) {
-  var delivery, token;
+contract('Agreement Interface', function(accounts) {
+  var delivery, token, offer, market;
 
   let testOffer = {
     name: 'AAA',
@@ -24,8 +25,8 @@ contract('Delivery Interface', function(accounts) {
   };
 
   beforeEach(async () => {
-    var market = await (new MarketRepository(MarketArtifacts)).create(accounts[0]);
-    var offer = await (new OfferRepository(OfferArtifacts)).save(market.marketContract.address, testOffer);
+    market = await (new MarketRepository(MarketArtifacts)).create(accounts[0]);
+    offer = await (new OfferRepository(OfferArtifacts)).save(market.marketContract.address, testOffer);
     token = await Token.new([web3.eth.accounts[0]], [1000]);
     agreement = new Agreement(offer.address, 3, token.address, AgreementArtifacts, Token);
   });
@@ -42,6 +43,11 @@ contract('Delivery Interface', function(accounts) {
 
     assert.equal(await token.balanceOf(accounts[0]), 400);
     assert.equal(await token.balanceOf(agreementContract.address), 600);
+  });
+
+  it('should catch if not enough tokens', async () => {
+    agreement = new Agreement(offer.address, PACKAGE_COUNT_TOO_MANY, token.address, AgreementArtifacts, Token);
+    await testUtils.expectThrow(agreement.initiateAgreement());
   });
 
   it('should accept agreement', async () => {

@@ -2,11 +2,17 @@ pragma solidity ^0.4.11;
 
 import "./Offer.sol";
 import "../Requirements/Requirements.sol";
+import "../../dependencies/ERC20.sol";
 
 contract Market{
 
 	Offer[] products;
 	Requirements[] requirements;
+	ERC20 public token;
+
+	function Market(ERC20 _token) {
+		token = _token; 
+	}
 
 	function productCount() constant returns (uint) {
 		return products.length;
