@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "../utils/MockToken.sol";
+import "../Utils/MockToken.sol";
 import "./Market.sol";
 
 contract MarketFactory{
