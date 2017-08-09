@@ -27,7 +27,7 @@ contract EscrowedAgreement is Agreement {
     }
 
     function escrowWithSeller() onlyBuyer returns (bool){
-        return token.transferFrom(buyer, this, amount);
+        assert(token.transferFrom(buyer, this, amount));
     }
 
     function approve() onlyBuyer {

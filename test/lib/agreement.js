@@ -5,10 +5,10 @@ const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
 const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
 const AgreementArtifacts = artifacts.require('./protocol/Agreement/EscrowedAgreement.sol');
 const Agreement = require('../../lib/Agreement');
+const testUtils = require('../testutils.js');
+const PACKAGE_COUNT_TOO_MANY = 10000000000000;
 
-const HUGE_NUMBER = 10000000000000;
-
-contract('Delivery Interface', function(accounts) {
+contract('Agreement Interface', function(accounts) {
   var delivery, token, offer, market;
 
   let testOffer = {
@@ -46,13 +46,8 @@ contract('Delivery Interface', function(accounts) {
   });
 
   it('should catch if not enough tokens', async () => {
-    agreement = new Agreement(offer.address, HUGE_NUMBER, token.address, AgreementArtifacts, Token);
-    try {
-      var agreementContract = await agreement.initiateAgreement();
-      assert(false);
-    } catch (e) {
-      assert(true);
-    }
+    agreement = new Agreement(offer.address, PACKAGE_COUNT_TOO_MANY, token.address, AgreementArtifacts, Token);
+    await testUtils.expectThrow(agreement.initiateAgreement());
   });
 
   it('should accept agreement', async () => {
