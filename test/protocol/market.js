@@ -8,14 +8,14 @@ const RangeRequirementsFactory = artifacts.require("./protocol/Requirements/Rang
 const RangeValidator = artifacts.require("./protocol/Validator/RangeValidator.sol");
 const DeliveryAgreement = artifacts.require("./protocol/Agreement/DeliveryAgreement.sol");
 const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties");
-const Amber = artifacts.require("./Amber.sol");
-
+const MockToken = artifacts.require(".protocol/Utils/MockToken.sol");
+const MarketFactory = artifacts.require("./protocol/Market/MarketFactory.sol");
 
 let IntegerType = 0;
 let BooleanType = 1;
 
 contract('Market', function(accounts) {
-  var market, measurements, requirements, validator;
+  var market, measurements, requirements, validator, token;
 
   beforeEach(async() => {
     market = await Market.new();
@@ -30,11 +30,20 @@ contract('Market', function(accounts) {
     await requirements.setAttributes(attributes, types, decimals, mins, maxs);
   });
 
-  it('offers empty in the beginning', async() => {
+  it('offers empty in the beginning', async () => {
     assert.equal(await market.productCount(), 0);
   });
 
-  it('should add offers', async() => {
+  it('market factory', async () => {
+    var factory = await MarketFactory.new(100);
+
+    var tokenAddress = await Market.at(await factory.market()).token();
+    var token = MockToken.at(tokenAddress);
+    
+    assert.equal(await token.balanceOf(accounts[0]), 100);
+  })
+
+  it('should add offers', async () => {
     await Offer.new("Fish", "Norway", "shark", "Qma", 40, 300, market.address, measurements.address, requirements.address, validator.address);
     await Offer.new("Fish", "Norway", "shark", "Qma", 40, 300, market.address, measurements.address, requirements.address, validator.address);
 
@@ -46,14 +55,14 @@ contract('Market', function(accounts) {
     assert.equal((await offerRequirements.getAttribute(3))[4], 342);
   });
 
-  it('should add requirements', async() => {
+  it('should add requirements', async () => {
     var marketRequirements = await RangeRequirementsFactory.at(await market.requirementsAt(0));
 
     assert.equal(await market.requirementsCount(), 1);
     assert.equal((await marketRequirements.getAttribute(3))[4], 342);
   });
 
-  it('get requirement by name', async() => {
+  it('get requirement by name', async () => {
     requirements = await RangeRequirementsFactory.new("name2", market.address);
     let attributes = ["Volume", "Certified", "Lactose", "Fat", "Gluten"];
     let types = [IntegerType, BooleanType, IntegerType, IntegerType, IntegerType];
