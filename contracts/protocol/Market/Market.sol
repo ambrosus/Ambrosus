@@ -3,15 +3,26 @@ pragma solidity ^0.4.11;
 import "./Offer.sol";
 import "../Requirements/Requirements.sol";
 import "../../dependencies/ERC20.sol";
+import "../Profile/Profile.sol";
 
 contract Market{
 
 	Offer[] products;
 	Requirements[] requirements;
 	ERC20 public token;
+	mapping (address => Profile) users;	
 
-	function Market(ERC20 _token) {
-		token = _token; 
+	function Market(ERC20 _token, address creator) {
+		token = _token;
+		users[creator] = new Profile();
+	}
+
+	function getMyProfile() constant returns (Profile) {
+		return users[msg.sender];
+	}
+
+	function createProfile() {
+		users[msg.sender] = new Profile();
 	}
 
 	function productCount() constant returns (uint) {
