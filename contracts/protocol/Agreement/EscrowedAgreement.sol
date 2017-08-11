@@ -6,6 +6,7 @@ import "../Measurements/MeasurementsOnChain.sol";
 import "../Requirements/Requirements.sol";
 import "../Validator/Validator.sol";
 import "../Market/Offer.sol";
+import "../Profile/Profile.sol";
 
 contract EscrowedAgreement is Agreement {
 
@@ -41,9 +42,10 @@ contract EscrowedAgreement is Agreement {
         stage = Stages.New;
     }
 
-    function escrowWithSeller() onlyBuyer returns (bool){
+    function escrowWithSeller(Profile buyersProfile) onlyBuyer returns (bool){
         assert(token.transferFrom(buyer, this, amount));
         stage = Stages.InProgress;
+        buyersProfile.pushAgreement(this);
     }
 
     function approve() onlyBuyer {

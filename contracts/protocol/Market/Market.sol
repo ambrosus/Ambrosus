@@ -5,7 +5,7 @@ import "../Requirements/Requirements.sol";
 import "../../dependencies/ERC20.sol";
 import "../Profile/Profile.sol";
 
-contract Market{
+contract Market {
 
 	Offer[] products;
 	Requirements[] requirements;
