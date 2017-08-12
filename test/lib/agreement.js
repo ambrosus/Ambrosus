@@ -28,13 +28,12 @@ contract('Agreement Interface', function(accounts) {
   };
 
   beforeEach(async () => {
-    market = await (new MarketRepository(MarketArtifacts)).create();
-    offer = await (new OfferRepository(OfferArtifacts)).save(market.marketContract.address, testOffer);
-    token = await Token.new([web3.eth.accounts[0]], [1000]);
-    var agreementRepo = new AgreementRepository(token.address, market.getAddress(), AgreementArtifacts, Token);
+    market = await (new MarketRepository()).create(1000);
+    offer = await (new OfferRepository()).save(market.marketContract.address, testOffer);
+    var agreementRepo = new AgreementRepository(market.getAddress(), AgreementArtifacts);
+    token = Token.at(await market.marketContract.token());
     agreement = await agreementRepo.initiateAgreement(offer.address, 3);
     agreementContract = agreement.agreementContract;
-
   });
 
   it('should setup buyer & seller', async () => {
@@ -43,20 +42,16 @@ contract('Agreement Interface', function(accounts) {
   });
 
   it('should escrow', async () => {
-    await agreement.transfer();
     assert.equal(await token.balanceOf(accounts[0]), 400);
     assert.equal(await token.balanceOf(agreementContract.address), 600);
   });
 
   it('should catch if not enough tokens', async () => {
-    agreementRepo = new AgreementRepository(token.address, market.getAddress(), 
-                                            AgreementArtifacts, Token);
-    agreement = await agreementRepo.initiateAgreement(offer.address, PACKAGE_COUNT_TOO_MANY);
-    await testUtils.expectThrow(agreement.transfer());
+    agreementRepo = new AgreementRepository(market.getAddress(), AgreementArtifacts);
+    await testUtils.expectThrow(agreementRepo.initiateAgreement(offer.address, PACKAGE_COUNT_TOO_MANY));
   });
 
   it('should accept agreement', async () => {
-    await agreement.transfer();
     await agreement.accept();
 
     assert.equal(await token.balanceOf(accounts[0]), 400);
@@ -64,7 +59,6 @@ contract('Agreement Interface', function(accounts) {
   });
 
   it('should reject agreement', async () => {
-    await agreement.transfer();
     await agreement.reject();
 
     assert.equal(await token.balanceOf(accounts[0]), 1000);
@@ -72,15 +66,12 @@ contract('Agreement Interface', function(accounts) {
   });
 
   it('should get all users agreements', async () => {
-    await agreement.transfer();
-    var agreementRepo = new AgreementRepository(token.address, market.getAddress(), 
-                                                AgreementArtifacts, Token);
-    agreement = await agreementRepo.initiateAgreement(offer.address, 1);
-    await agreement.transfer();
+    var agreementRepo = new AgreementRepository(market.getAddress(), AgreementArtifacts);
+    await agreementRepo.initiateAgreement(offer.address, 1);
 
     var profile = await new ProfileRepository().getInMarket(market.getAddress());
+    
     var myAgreements = await new AgreementRepository().getAllUserAgreements(profile.getAddress());
-
     assert.equal(myAgreements.length, 2)
   })
 });
