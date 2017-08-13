@@ -35,7 +35,7 @@ All 3 parts are stored in this repository. Following is a description of 3 layer
 
 ### Smart Contracts
 Smart contracts are the core of ambrosus protocol. The system of contracts is written in Solidity and compiled to EVM (Etherem Virtual Machine).
-Contracts are combined together to co-operate and create services around food supply chain. They are abstract building blocks for different applications.
+Contracts are combined together to co-operate and create services around quality assurance in food and pharma supply chains. They are abstract building blocks for different applications.
 
 There are some basic abstractions in the protocol, including:
 
