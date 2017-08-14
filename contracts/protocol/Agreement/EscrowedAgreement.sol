@@ -41,14 +41,10 @@ contract EscrowedAgreement is Agreement, Ownable {
     function EscrowedAgreement(ERC20Protocol _token, Offer _offer, uint _quantity, address _buyer) {
         buyer = _buyer;
         token = _token;
-        amount = _offer.pricePerPackage()*_quantity;
+        amount = _offer.priceFor(_quantity);
         seller = _offer.seller();
         offer = _offer;
         quantity = _quantity;
-        stage = Stages.New;
-    }
-
-    function escrowWithSeller() onlyOwner onlyStage(Stages.New){
         stage = Stages.InProgress;
     }
 

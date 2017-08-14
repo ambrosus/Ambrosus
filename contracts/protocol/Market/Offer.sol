@@ -49,6 +49,10 @@ contract Offer is Ownable {
         _market.pushOffer(this);
     }
 
+    function priceFor(uint _quantity) constant returns (uint) {
+        return pricePerPackage()*_quantity;
+    }
+
     function pricePerPackage() constant returns (uint) {
         return pricePerUnit*packageWeight/100;
     }

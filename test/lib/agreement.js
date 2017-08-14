@@ -32,7 +32,10 @@ contract('Agreement Interface', function(accounts) {
     offer = await (new OfferRepository()).save(market.marketContract.address, testOffer);
     var agreementRepo = new AgreementRepository(market.getAddress(), AgreementArtifacts);
     token = Token.at(await market.marketContract.token());
-    agreement = await agreementRepo.initiateAgreement(offer.address, 3);
+    await agreementRepo.initiateAgreement(offer.address, 3);
+    var profile = await new ProfileRepository().getMyProfileFromMarket(market.getAddress());
+    var agreementAddress = (await agreementRepo.getUserAgreements(profile.getAddress()))[0].address;
+    agreement = await agreementRepo.fromAddress(agreementAddress);
     agreementContract = agreement.agreementContract;
   });
 
@@ -69,9 +72,9 @@ contract('Agreement Interface', function(accounts) {
     var agreementRepo = new AgreementRepository(market.getAddress(), AgreementArtifacts);
     await agreementRepo.initiateAgreement(offer.address, 1);
 
-    var profile = await new ProfileRepository().getInMarket(market.getAddress());
+    var profile = await new ProfileRepository().getMyProfileFromMarket(market.getAddress());
     
-    var myAgreements = await new AgreementRepository().getAllUserAgreements(profile.getAddress());
+    var myAgreements = await new AgreementRepository().getUserAgreements(profile.getAddress());
     assert.equal(myAgreements.length, 2)
   })
 });
