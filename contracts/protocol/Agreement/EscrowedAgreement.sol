@@ -6,12 +6,16 @@ import "../Measurements/MeasurementsOnChain.sol";
 import "../Requirements/Requirements.sol";
 import "../Validator/Validator.sol";
 import "../Market/Offer.sol";
+import "../Profile/Profile.sol";
+import "../Utils/Ownable.sol";
 
-contract EscrowedAgreement is Agreement {
+contract EscrowedAgreement is Agreement, Ownable {
 
     address public buyer;
     address public seller;
     uint public amount;
+    uint public quantity;
+    Offer public offer;
     ERC20Protocol token;
 
     modifier onlyBuyer() {
@@ -19,22 +23,38 @@ contract EscrowedAgreement is Agreement {
         _;
     }
 
-    function EscrowedAgreement(ERC20Protocol _token, Offer _offer, uint _quantity) {
-        buyer = msg.sender;
+    modifier onlyStage(Stages _stage) {
+        require(stage == _stage);
+        _;
+    }
+
+    enum Stages {
+        New,
+        InProgress,
+        Complete,
+        Canceled,
+        Reimbursed
+    }
+
+    Stages public stage;
+
+    function EscrowedAgreement(ERC20Protocol _token, Offer _offer, uint _quantity, address _buyer) {
+        buyer = _buyer;
         token = _token;
-        amount = _offer.pricePerPackage()*_quantity;
+        amount = _offer.priceFor(_quantity);
         seller = _offer.seller();
+        offer = _offer;
+        quantity = _quantity;
+        stage = Stages.InProgress;
     }
 
-    function escrowWithSeller() onlyBuyer returns (bool){
-        assert(token.transferFrom(buyer, this, amount));
-    }
-
-    function approve() onlyBuyer {
+    function approve() onlyBuyer onlyStage(Stages.InProgress){
         assert(token.transfer(seller, amount));
+        stage = Stages.Complete;
     }
 
-    function reimburse() onlyBuyer {
+    function reimburse() onlyBuyer onlyStage(Stages.InProgress){
         assert(token.transfer(buyer, amount));
+        stage = Stages.Reimbursed;
     }
 }

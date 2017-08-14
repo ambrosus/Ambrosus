@@ -12,7 +12,7 @@ contract MarketFactory {
     addresses[0] = msg.sender;
     uint[] memory amounts = new uint[](1);
     amounts[0] = initialBalance;
-    market = new Market(new MockToken(addresses, amounts));        
+    market = new Market(new MockToken(addresses, amounts), msg.sender);        
   }
 
 }

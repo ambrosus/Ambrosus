@@ -10,6 +10,7 @@ const DeliveryAgreement = artifacts.require("./protocol/Agreement/DeliveryAgreem
 const TokenEscrowedParties = artifacts.require("./protocol/Parties/TokenEscrowedParties");
 const MockToken = artifacts.require(".protocol/Utils/MockToken.sol");
 const MarketFactory = artifacts.require("./protocol/Market/MarketFactory.sol");
+const Profile = artifacts.require("./protocol/Profile/Profile.sol");
 
 let IntegerType = 0;
 let BooleanType = 1;
