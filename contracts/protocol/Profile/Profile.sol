@@ -8,7 +8,7 @@ contract Profile is Ownable{
   EscrowedAgreement[] agreements;
 
   function pushAgreement(EscrowedAgreement _agreement) onlyOwner{
-    require(_agreement.stage()==EscrowedAgreement.Stages.InProgress);
+    require(_agreement.stage() == EscrowedAgreement.Stages.InProgress);
     agreements.push(_agreement);
   }
 

@@ -23,6 +23,11 @@ contract EscrowedAgreement is Agreement, Ownable {
         _;
     }
 
+    modifier onlyStage(Stages _state) {
+        require(stage == _stage);
+        _;
+    }
+
     enum Stages {
         New,
         InProgress,
@@ -43,17 +48,17 @@ contract EscrowedAgreement is Agreement, Ownable {
         stage = Stages.New;
     }
 
-    function escrowWithSeller() onlyOwner{
+    function escrowWithSeller() onlyOwner onlyStage(Stages.New){
         stage = Stages.InProgress;
     }
 
     function approve() onlyBuyer {
-        assert(token.transfer(seller, amount));
+        assert(token.transfer(seller, amount)) onlyStage(Stages.InProgress);
         stage = Stages.Complete;
     }
 
     function reimburse() onlyBuyer {
-        assert(token.transfer(buyer, amount));
+        assert(token.transfer(buyer, amount)) onlyStage(Stages.InProgress);
         stage = Stages.Reimbursed;
     }
 }
