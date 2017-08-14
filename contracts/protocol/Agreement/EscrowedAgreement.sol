@@ -23,7 +23,7 @@ contract EscrowedAgreement is Agreement, Ownable {
         _;
     }
 
-    modifier onlyStage(Stages _state) {
+    modifier onlyStage(Stages _stage) {
         require(stage == _stage);
         _;
     }
@@ -52,13 +52,13 @@ contract EscrowedAgreement is Agreement, Ownable {
         stage = Stages.InProgress;
     }
 
-    function approve() onlyBuyer {
-        assert(token.transfer(seller, amount)) onlyStage(Stages.InProgress);
+    function approve() onlyBuyer onlyStage(Stages.InProgress){
+        assert(token.transfer(seller, amount));
         stage = Stages.Complete;
     }
 
-    function reimburse() onlyBuyer {
-        assert(token.transfer(buyer, amount)) onlyStage(Stages.InProgress);
+    function reimburse() onlyBuyer onlyStage(Stages.InProgress){
+        assert(token.transfer(buyer, amount));
         stage = Stages.Reimbursed;
     }
 }
