@@ -35,14 +35,14 @@ All 3 parts are stored in this repository. Following is a description of 3 layer
 
 ### Smart Contracts
 Smart contracts are the core of ambrosus protocol. The system of contracts is written in Solidity and compiled to EVM (Etherem Virtual Machine).
-Contracts are combined together to co-operate and create services around food supply chain. They are abstract building blocks for different applications.
+Contracts are combined together to co-operate and create services around quality assurance in food and pharma supply chains. They are abstract building blocks for different applications.
 
 There are some basic abstractions in the protocol, including:
 
 - Measurements - a contract abstraction used to store measurements - a basic unit of a history of an item in supply chain
-- Requirements - a basic way to describe expectations about food in supply chain
-- Validator - a way to check if given food history (list of measurements) meets specific validation rules (e.g. meet requirements)
-- Agreement - represents agreement between Parties, with specific rules considering food in supply chain
+- Requirements - a basic way to describe expectations about product in supply chain
+- Validator - a way to check if given product's history (list of measurements) meets specific validation rules (e.g. meet requirements)
+- Agreement - represents agreement between Parties, with specific rules considering product in supply chain
 
 In a top of those abstractions are build implementations for specific use cases. They are more concrete building blocks. Examples are:
 

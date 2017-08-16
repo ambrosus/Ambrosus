@@ -1,14 +1,15 @@
 pragma solidity ^0.4.11;
 
 import "../Agreement/EscrowedAgreement.sol";
+import "../Utils/Ownable.sol";
 
-contract Profile {
+contract Profile is Ownable{
 
   EscrowedAgreement[] agreements;
 
-  function pushAgreement(EscrowedAgreement _agreemnent) {
-    require(_agreemnent.stage()==EscrowedAgreement.Stages.InProgress);
-    agreements.push(_agreemnent);
+  function pushAgreement(EscrowedAgreement _agreement) onlyOwner{
+    require(_agreement.stage() == EscrowedAgreement.Stages.InProgress);
+    agreements.push(_agreement);
   }
 
   function agreementsCount() constant returns (uint) {
