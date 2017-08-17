@@ -27,6 +27,14 @@ contract Market{
 		users[msg.sender].pushAgreement(agreement); 
 	}
 
+	function setUserName(bytes32 name) {
+		users[msg.sender].setName(name);
+	}
+
+	function getUserName(address user) constant returns (bytes32) {
+		return (users[user]).name();
+	}
+
 	function getNewestAgreement() constant returns (EscrowedAgreement) {
 		assert(users[msg.sender] != address(0x0));
 		assert(users[msg.sender].agreementsCount() > 0);
@@ -45,7 +53,10 @@ contract Market{
 		return products[i];
 	}
 
-	function pushOffer(Offer offer) {
+	function pushOffer(Offer offer, address seller) {
+		if (users[seller] == address(0x0)) {
+			users[seller] = new Profile();
+		} 
 		products.push(offer);
 	}
 

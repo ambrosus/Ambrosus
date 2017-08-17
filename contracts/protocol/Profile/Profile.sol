@@ -6,6 +6,7 @@ import "../Utils/Ownable.sol";
 contract Profile is Ownable{
 
   EscrowedAgreement[] agreements;
+  bytes32 public name;
 
   function pushAgreement(EscrowedAgreement _agreement) onlyOwner{
     require(_agreement.stage() == EscrowedAgreement.Stages.InProgress);
@@ -20,5 +21,7 @@ contract Profile is Ownable{
     return agreements[index];
   } 
 
-  
+  function setName(bytes32 _name) onlyOwner {
+    name = _name;
+  }
 }
