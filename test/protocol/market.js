@@ -36,12 +36,12 @@ contract('Market', function(accounts) {
   });
 
   it('market factory', async () => {
-    var factory = await MarketFactory.new(100);
+    var factory = await MarketFactory.new();
 
     var tokenAddress = await Market.at(await factory.market()).token();
     var token = MockToken.at(tokenAddress);
     
-    assert.equal(await token.balanceOf(accounts[0]), 100);
+    assert.equal(await token.balanceOf(accounts[0]), 0);
   })
 
   it('should add offers', async () => {
