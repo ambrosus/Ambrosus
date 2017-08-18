@@ -19,4 +19,11 @@ contract('Profile Interface', function(accounts) {
     assert(await profile.getUserName(), "Name2");
 
   });
+
+  it('unicode name', async () => {
+    var market = await new MarketRepository().create();
+    await new ProfileRepository().setUserName(market.getAddress(), "😀😀ЙЦ漢字");
+    var profile = await new ProfileRepository().getMyProfileFromMarket(market.getAddress());
+    assert(await profile.getUserName(), "😀😀ЙЦ漢字");
+  })
 });
