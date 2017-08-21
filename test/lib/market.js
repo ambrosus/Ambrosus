@@ -48,12 +48,4 @@ contract('Market Interface', function(accounts) {
 
     assert.deepEqual(offers, offers2);
   });
-
-  it('should work with partial information', async () => {
-    await offerRepo.save(market.getAddress(), {origin: 'aaa', seller: accounts[0]});
-
-    var offers = await offerRepo.getAllFromMarket(market);
-
-    assert.equal(offers[0].origin, 'aaa');
-  });
 });
