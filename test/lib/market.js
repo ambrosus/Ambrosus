@@ -5,6 +5,7 @@ const MarketRepository = require('../../lib/MarketRepository.js');
 const MarketArtifacts = artifacts.require("./protocol/Market/Market.sol");
 const MarketFactoryArtifacts = artifacts.require("./protocol/Market/MarketFactory.sol");
 const OfferArtifacts = artifacts.require("./protocol/Market/Offer.sol");
+const chai = require('chai');
 
 contract('Market Interface', function(accounts) {
   var offerRepo, marketRepo, market;
@@ -48,4 +49,16 @@ contract('Market Interface', function(accounts) {
 
     assert.deepEqual(offers, offers2);
   });
+
+  it('do not lose precision', async () => {
+    var tmp = {
+      packageWeight: 0.12,
+      pricePerPackage: 232131231232,
+      seller: accounts[3]
+    }
+    await offerRepo.save(market.getAddress(), tmp);
+    var offers = await offerRepo.getAllFromMarket(market);
+    //chai.expect(offers.pricePerUnit).to.be.approximately
+    assert.closeTo(offers[0].pricePerUnit, tmp.pricePerPackage/tmp.packageWeight, 0.001);
+  })
 });
