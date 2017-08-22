@@ -13,11 +13,13 @@ contract('Utils', function(accounts) {
   it('check errors', () => {
     chai.expect(()=>utils.toBigNumberWithDecimals(12.412, 2)).to.throw(RangeError);
     chai.expect(()=>utils.toBigNumberWithDecimals(12, 2.2)).to.throw(TypeError);
+    chai.expect(()=>utils.toBigNumberWithDecimals(12, "2.2")).to.throw(TypeError);
     chai.expect(()=>utils.toBigNumberWithDecimals(12, -3)).to.throw(TypeError);
+    chai.expect(()=>utils.toBigNumberWithDecimals(12, "-3")).to.throw(TypeError);
   });
 
   it('string and bignum to bignum', () => {
-    var bignum = utils.toBigNumberWithDecimals("12.3", 2);
+    var bignum = utils.toBigNumberWithDecimals("12.3", '2');
     var bigbignum = utils.toBigNumberWithDecimals(bignum);
     var biggernum = utils.toBigNumberWithDecimals(bignum, 1);
     assert.equal(bignum, 1230);
