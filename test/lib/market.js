@@ -14,7 +14,6 @@ contract('Market Interface', function(accounts) {
     origin: 'BBB',
     category: 'Fish',
     packageWeight: 200,
-    pricePerUnit: 100,
     pricePerPackage: 20000,
     imageHash: 'QmVPMUYVooLw9XRgEWFnKZLyaZeWBM18EX7X3g6hrQBDqB',
     seller: accounts[0],
@@ -48,4 +47,5 @@ contract('Market Interface', function(accounts) {
 
     assert.deepEqual(offers, offers2);
   });
+
 });

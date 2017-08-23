@@ -52,7 +52,7 @@ contract('Market', function(accounts) {
     var offerRequirements = RangeRequirementsFactory.at(await offer.requirements());
 
     assert.equal(await market.productCount(), 2);
-    assert.equal(await offer.pricePerUnit(), 300)
+    assert.equal(await offer.pricePerPackage(), 300)
     assert.equal((await offerRequirements.getAttribute(3))[4], 342);
   });
 
