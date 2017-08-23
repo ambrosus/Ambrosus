@@ -19,7 +19,6 @@ contract('Agreement Interface', function(accounts) {
     origin: 'BBB',
     category: 'Fish',
     packageWeight: 2,
-    pricePerUnit: 1,
     pricePerPackage: 2,
     imageHash: 'QmVPMUYVooLw9XRgEWFnKZLyaZeWBM18EX7X3g6hrQBDqB',
     seller: web3.eth.accounts[1],
