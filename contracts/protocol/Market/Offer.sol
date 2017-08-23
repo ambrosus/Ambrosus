@@ -18,7 +18,7 @@ contract Offer is Ownable {
     uint constant priceDecimals = 2;
     uint constant weightDecimals = 2;
     uint public packageWeight;
-    uint public pricePerUnit;
+    uint public pricePerPackage;
 
     Measurements public measurements;
     Requirements public requirements;
@@ -37,7 +37,7 @@ contract Offer is Ownable {
         Validator _validator)
     {       
         name = _name;
-        pricePerUnit = _price;
+        pricePerPackage = _price;
         packageWeight = _packageWeight;
         origin = _origin;
         category = _category;
@@ -50,20 +50,16 @@ contract Offer is Ownable {
     }
 
     function priceFor(uint _quantity) constant returns (uint) {
-        return pricePerPackage()*_quantity;
-    }
-
-    function pricePerPackage() constant returns (uint) {
-        return pricePerUnit*packageWeight/100;
+        return pricePerPackage*_quantity;
     }
 
     function getAttributes() constant returns (string, bytes32, bytes32, address,
-                                               string, uint, uint, uint,
+                                               string, uint, uint,
                                                Measurements, Requirements, Validator) 
     {
         return (name, origin, category, seller,
                 imageHash, packageWeight, 
-                pricePerUnit, pricePerPackage(),
+                pricePerPackage,
                 measurements, requirements, validator);
     }
 }
