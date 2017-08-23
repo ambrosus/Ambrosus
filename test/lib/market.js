@@ -15,7 +15,7 @@ contract('Market Interface', function(accounts) {
     category: 'Fish',
     packageWeight: 200,
     pricePerUnit: 100,
-    pricePerPackage: 200,
+    pricePerPackage: 20000,
     imageHash: 'QmVPMUYVooLw9XRgEWFnKZLyaZeWBM18EX7X3g6hrQBDqB',
     seller: accounts[0],
     measurementsAddress: accounts[1],
@@ -47,13 +47,5 @@ contract('Market Interface', function(accounts) {
     var offers2 = await offerRepo.getAllFromMarket(market2);
 
     assert.deepEqual(offers, offers2);
-  });
-
-  it('should work with partial information', async () => {
-    await offerRepo.save(market.getAddress(), {origin: 'aaa', seller: accounts[0]});
-
-    var offers = await offerRepo.getAllFromMarket(market);
-
-    assert.equal(offers[0].origin, 'aaa');
   });
 });

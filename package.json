@@ -1,12 +1,13 @@
 {
   "name": "ambrosus",
-  "version": "0.2.11",
+  "version": "0.2.14",
   "description": "Smart contracts building Amber protocol.",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
+    "chai": "^4.1.1",
     "es6-promisify": "^5.0.0",
     "ethereumjs-util": "^5.1.2",
     "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
