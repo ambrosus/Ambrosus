@@ -25,9 +25,15 @@ contract MeasurementsOffChain is Measurements, ECVerify {
     uint constant SIZE = 11; //Measurement size
 
     Devices public devices;
+    string public ipfsHash;
 
-    function MeasurementsOffChain(Devices _devices) {
+    function MeasurementsOffChain(Devices _devices, string _ipfsHash) {
         devices = _devices;
+        ipfsHash = _ipfsHash;
+    }
+
+    function setIpfsHash(string _ipfsHash) {
+        ipfsHash = _ipfsHash;
     }
 
     function addMeasurements(bytes32 [], int [], bytes32 [], uint [], bytes32 [], bytes32 []) {
