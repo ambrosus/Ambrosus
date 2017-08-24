@@ -10,4 +10,11 @@ contract('Token Interface', function(accounts) {
     assert.equal(await token.balanceOf(accounts[0]), 10);
     assert.equal(await token.balanceOf(accounts[1]), 123);
   });
+
+  it('should charge account', async () => {
+    var token = await new TokenSingleton(Token).create([accounts[0]],[10]);
+    await token.chargeMyAccount(110);
+
+    assert.equal(await token.balanceOf(accounts[0]), 120);
+  });
 });

@@ -24,7 +24,7 @@ contract('Requirements Interface', function(accounts) {
 
   beforeEach(async () => {
     requirementsRepository = new RequirementsRepository(RequirementsArtifacts);
-    market = await new MarketRepository(MarketArtifacts).create(accounts[0]);
+    market = await new MarketRepository(MarketArtifacts).create();
     requirement = await requirementsRepository.create("name", market.getAddress(), testAttributes);
   });
 

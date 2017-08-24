@@ -36,12 +36,12 @@ contract('Market', function(accounts) {
   });
 
   it('market factory', async () => {
-    var factory = await MarketFactory.new(100);
+    var factory = await MarketFactory.new();
 
     var tokenAddress = await Market.at(await factory.market()).token();
     var token = MockToken.at(tokenAddress);
     
-    assert.equal(await token.balanceOf(accounts[0]), 100);
+    assert.equal(await token.balanceOf(accounts[0]), 0);
   })
 
   it('should add offers', async () => {
@@ -75,5 +75,15 @@ contract('Market', function(accounts) {
     var requirement = RangeRequirementsFactory.at(await market.getRequirementsByName("name2"));
     
     assert.equal((await requirement.getAttribute(4))[4], 2);
+  });
+
+  it('should set user name', async () => {
+    var factory = await MarketFactory.new(100);
+    var newMarket = Market.at(await factory.market());
+  
+    await newMarket.setUserName('John Doe');
+    let profile = Profile.at(await newMarket.getMyProfile());
+
+    assert.equal(web3.toUtf8(await profile.name()), 'John Doe');
   })
 });

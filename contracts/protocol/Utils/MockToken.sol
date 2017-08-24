@@ -11,4 +11,9 @@ contract MockToken is ERC20 {
 		}
 	}
 
+  function chargeMyAccount(uint amount) {
+    balances[msg.sender] += amount;
+    totalSupply += amount;
+  }
+
 }
