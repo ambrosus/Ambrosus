@@ -14,9 +14,9 @@ contract('Profile Interface', function(accounts) {
     var market = await new MarketRepository().create();
     await new ProfileRepository().setUserName(market.getAddress(), "Name1");
     var profile = await new ProfileRepository().getMyProfileFromMarket(market.getAddress());
-    assert(await profile.getUserName(), "Name1");
+    assert.equal(await profile.getUserName(), "Name1");
     await new ProfileRepository().setUserName(market.getAddress(), "Name2");
-    assert(await profile.getUserName(), "Name2");
+    assert.equal(await profile.getUserName(), "Name2");
 
   });
 
@@ -24,6 +24,6 @@ contract('Profile Interface', function(accounts) {
     var market = await new MarketRepository().create();
     await new ProfileRepository().setUserName(market.getAddress(), "😀😀ЙЦ漢字");
     var profile = await new ProfileRepository().getMyProfileFromMarket(market.getAddress());
-    assert(await profile.getUserName(), "😀😀ЙЦ漢字");
+    assert.equal(await profile.getUserName(), "😀😀ЙЦ漢字");
   })
 });
