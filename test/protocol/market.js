@@ -45,8 +45,8 @@ contract('Market', function(accounts) {
   })
 
   it('should add offers', async () => {
-    await Offer.new("Fish", "Norway", "shark", "Qma", 40, 300, market.address, measurements.address, requirements.address, validator.address);
-    await Offer.new("Fish", "Norway", "shark", "Qma", 40, 300, market.address, measurements.address, requirements.address, validator.address);
+    await Offer.new("Fish", "Norway", "shark", "Qma", 40, 300, market.address, accounts[0], measurements.address, requirements.address, validator.address);
+    await Offer.new("Fish", "Norway", "shark", "Qma", 40, 300, market.address, accounts[0], measurements.address, requirements.address, validator.address);
 
     var offer = await Offer.at(await market.productAt(1));
     var offerRequirements = RangeRequirementsFactory.at(await offer.requirements());

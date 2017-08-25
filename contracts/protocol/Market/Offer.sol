@@ -32,6 +32,7 @@ contract Offer is Ownable {
         uint _packageWeight,
         uint _price,
         Market _market,
+        address _seller,
         Measurements _measurements,
         Requirements _requirements,
         Validator _validator)
@@ -42,11 +43,11 @@ contract Offer is Ownable {
         origin = _origin;
         category = _category;
         imageHash = _imageHash;
-        seller = msg.sender;
+        seller = _seller;
         measurements = _measurements;
         requirements = _requirements;
         validator = _validator;
-        _market.pushOffer(this, msg.sender);
+        _market.pushOffer(this, _seller);
     }
 
     function priceFor(uint _quantity) constant returns (uint) {
