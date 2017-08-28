@@ -4,22 +4,26 @@ const assert = require('assert')
 
 
 describe('IPFSMap', function() {
+  it("add an element", (done) => {
+    var ipfs = new IPFS();
+    ipfs.on('ready', async() => {
+      var map = await IPFSMap.create(ipfs);
+      var hash1 = await map.add('test');
+      var hash2 = await map.add('test2');
+      var links = map.keys();
+      var data = await map.values();
 
-    it("add an element", (done) => {
-        var ipfs = new IPFS();
-        ipfs.on('ready', async () => {
-            var map = await IPFSMap.create(ipfs);
-            var hash1 = await map.add('test');
-            var hash2 = await map.add('test2');
-            var links = map.keys();
-            var data = await map.values();
+      assert.equal(links.length, 2);
+      assert.equal(data.length, 2);
+      assert.deepEqual(data.sort(), ['test', 'test2']);
+      assert.deepEqual(links.map((l) => l.multihash).sort(), [hash1, hash2].sort());
 
-            assert.equal(links.length, 2);
-            assert.equal(data.length, 2);
-            assert.deepEqual(data.sort(), ['test', 'test2']);
-            assert.deepEqual(links.map((l)=>l.multihash).sort(), [hash1,hash2].sort());
+      map = await IPFSMap.createFromHash(ipfs, map.getOwnHash());
+      await map.add('test3');
+      data = await map.values();
+      assert.deepEqual(data.sort(), ['test', 'test2', 'test3']);
 
-            ipfs.stop(done);
-        });        
+      ipfs.stop(done);
     });
+  });  
 });

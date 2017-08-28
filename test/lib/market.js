@@ -14,10 +14,10 @@ contract('Market Interface', function(accounts) {
     origin: 'BBB',
     category: 'Fish',
     packageWeight: 200,
+    pricePerUnit: 100,
     pricePerPackage: 20000,
     imageHash: 'QmVPMUYVooLw9XRgEWFnKZLyaZeWBM18EX7X3g6hrQBDqB',
     seller: accounts[0],
-    measurementsAddress: accounts[1],
     requirementsAddress: accounts[1],
     validatorAddress: accounts[1],
     quality: '',
@@ -30,16 +30,17 @@ contract('Market Interface', function(accounts) {
   })
 
   it('should add and get offer', async () => {   
-    await offerRepo.save(market.getAddress(), testOffer);
+    await offerRepo.save(market.getAddress(), testOffer, [], '');
 
     var offers = await offerRepo.getAllFromMarket(market);
-    delete offers[0].address
+    delete offers[0].address;
+    delete offers[0].measurementsAddress;
     
     assert.deepEqual(offers[0], testOffer);
   });
 
   it('should get contract from address', async () => {
-    await offerRepo.save(market.getAddress(), testOffer);
+    await offerRepo.save(market.getAddress(), testOffer, [], '');
     var market2 = await marketRepo.fromAddress(market.getAddress());
 
     var offers = await offerRepo.getAllFromMarket(market);

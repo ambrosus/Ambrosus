@@ -11,6 +11,7 @@
     "es6-promisify": "^5.0.0",
     "ethereumjs-util": "^5.1.2",
     "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
+    "multiplex": "^6.7.0",
     "truffle-contract": "^2.0.1",
     "web3": "^1.0.0-beta.13"
   },
@@ -20,6 +21,7 @@
   },
   "scripts": {
     "test": "mocha ./storage-test && truffle test",
+    "test-storage": "mocha ./storage-test",
     "build": "truffle build"
   },
   "repository": {

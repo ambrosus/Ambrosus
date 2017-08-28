@@ -28,7 +28,7 @@ contract('Agreement Interface', function(accounts) {
 
   beforeEach(async () => {
     market = await (new MarketRepository()).create();
-    offer = await (new OfferRepository()).save(market.marketContract.address, testOffer);
+    offer = await (new OfferRepository()).save(market.marketContract.address, testOffer, [], '');
     var agreementRepo = new AgreementRepository(market.getAddress(), AgreementArtifacts);
     token = Token.at(await market.marketContract.token());
     token.chargeMyAccount(1000);

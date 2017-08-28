@@ -21,7 +21,7 @@ contract('MeasurementsOffChain', function(accounts) {
 
     before('Deploy contracts', async () => {
         var devices = await Devices.new([accounts[1], accounts[2]]);
-        measurementsContract = await MeasurementsOffChain.new(devices.address);
+        measurementsContract = await MeasurementsOffChain.new(devices.address, '');
     });
 
     it("should serialize and deserialize measurements", async () => {
@@ -62,13 +62,13 @@ contract('MeasurementsOffChain', function(accounts) {
         assert.deepEqual(batch_nos, ["bch01", "bch02"]);        
     });
 
-    it('should not accept measurment with nonexistent device', async ()=>{
+    it('should not accept measurement with nonexistent device', async ()=>{
         var result = await invalid_measurment.encode();
         assert.isNotOk(await measurementsContract.validateAddressList(result));
 
     });
 
-    it('MeasurementsStorage storage should throw error if device doesnt exist',async ()=>{
+    it('MeasurementsStorage storage should throw error if device doesn\'t exist',async ()=>{
         var storage = new MeasurementsStorage(null, measurementsContract.address);
         
         try{
