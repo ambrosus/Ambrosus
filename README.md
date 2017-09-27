@@ -34,7 +34,7 @@ Ambrosus architecture consists of 3 main layers:
 All 3 parts are stored in this repository. Following is a description of 3 layers introduced above.
 
 ### Smart Contracts
-Smart contracts are the core of ambrosus protocol. The system of contracts is written in Solidity and compiled to EVM (Etherem Virtual Machine).
+Smart contracts are the core of ambrosus protocol. The system of contracts is written in Solidity and compiled to EVM (Ethereum Virtual Machine).
 Contracts are combined together to co-operate and create services around quality assurance in food and pharma supply chains. They are abstract building blocks for different applications.
 
 There are some basic abstractions in the protocol, including:
