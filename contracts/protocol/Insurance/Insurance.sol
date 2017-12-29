@@ -43,6 +43,8 @@ contract Insurance is Ownable {
         require (agreement.seller() == msg.sender || agreement.buyer() == msg.sender);
         require (premium > 0);
 
+        require (token.transferFrom(msg.sender, this, premium));
+
         /* 
             The specific insurance contracts inheriting from this contract must override 
             this function to do additional validations of agreement, premium and other details
@@ -51,9 +53,19 @@ contract Insurance is Ownable {
 
         insuredAgreements[agreement] = InsuranceDetails(Status.Active, msg.sender);
         
-        assert(token.transferFrom(msg.sender, this, premium));
-
         NewAgreementInsured(msg.sender, agreement);
+    }
+
+    function requestReimbursement(Agreement agreement) public {
+        require (agreement != address(0x0));
+
+        InsuranceDetails storage insurance = insuredAgreements[agreement];
+
+        require (insurance.status == Status.Active);
+        require (insurance.beneficiary == msg.sender);
+
+        insurance.status = Status.ReimbursementRequested;
+        ReimbursementRequested(msg.sender, agreement);
     }
 
     function reimburse(EscrowedAgreement agreement) public {
@@ -61,25 +73,15 @@ contract Insurance is Ownable {
 
         InsuranceDetails storage insurance = insuredAgreements[agreement];
 
-        require (insurance.status != Status.Unknown);
-        require (insurance.status != Status.ReimbursementRejected);
-        require (insurance.status != Status.Complete);
-
+        require (insurance.status == Status.ReimbursementApproved);
         require (insurance.beneficiary == msg.sender);
 
-        if (insurance.status == Status.Active) {
-            insurance.status = Status.ReimbursementRequested;
-            ReimbursementRequested(msg.sender, agreement);
-        } 
-        else if (insurance.status == Status.ReimbursementApproved) {
-            insurance.status = Status.Complete;
+        insurance.status = Status.Complete;
 
-            uint amount = agreement.amount();
+        uint amount = agreement.amount();
+        assert(token.transfer(insurance.beneficiary, amount));
 
-            assert(token.transfer(insurance.beneficiary, amount));
-
-            ReimbursementPaid(insurance.beneficiary, agreement, amount);
-        }
+        ReimbursementPaid(insurance.beneficiary, agreement, amount);
     }
 
     function approve(Agreement agreement) public onlyOwner {
