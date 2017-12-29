@@ -108,10 +108,12 @@ contract('Insurance', function(accounts) {
 
     describe('REQUESTING REIMBURSEMENT', () => {    
         it("should not reimburse null agreement", async() => {
+            await assertEx.isReverted(async() => insurance.requestReimbursement(0, {from: seller}));
             await assertEx.isReverted(async() => insurance.reimburse(0, {from: seller}));
         });
 
         it("should not reimburse not-insured agreement", async() => {
+            await assertEx.isReverted(async() => insurance.requestReimbursement(agreement, {from: seller}));
             await assertEx.isReverted(async() => insurance.reimburse(agreement, {from: seller}));
         });
 
@@ -120,10 +122,11 @@ contract('Insurance', function(accounts) {
             await amber.mintLiquidToken(seller, 42, {from: amberOwner});
             await amber.approve(insurance.address, 42, {from: seller});
             await insurance.insure(agreement, 42, {from: seller});
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
             await insurance.reject(agreement, {from: insuranceOwner});
 
             // Act & Assert        
+            await assertEx.isReverted(async() => insurance.requestReimbursement(agreement, {from: seller}));
             await assertEx.isReverted(async() => insurance.reimburse(agreement, {from: seller}));
         });
 
@@ -132,7 +135,7 @@ contract('Insurance', function(accounts) {
             await amber.mintLiquidToken(seller, 42, {from: amberOwner});
             await amber.approve(insurance.address, 42, {from: seller});
             await insurance.insure(agreement, 42, {from: seller});
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
             await insurance.approve(agreement, {from: insuranceOwner});
 
             var agreementAmount = await offer.priceFor(42);
@@ -140,6 +143,7 @@ contract('Insurance', function(accounts) {
             await insurance.reimburse(agreement, {from: seller});
 
             // Act & Assert        
+            await assertEx.isReverted(async() => insurance.requestReimbursement(agreement, {from: seller}));
             await assertEx.isReverted(async() => insurance.reimburse(agreement, {from: seller}));
         });
 
@@ -150,6 +154,7 @@ contract('Insurance', function(accounts) {
             await insurance.insure(agreement, 42, {from: seller});
 
             // Act & Assert        
+            await assertEx.isReverted(async() => insurance.requestReimbursement(agreement, {from: buyer}));
             await assertEx.isReverted(async() => insurance.reimburse(agreement, {from: buyer}));
         });
 
@@ -160,7 +165,7 @@ contract('Insurance', function(accounts) {
             await insurance.insure(agreement, 42, {from: seller});
 
             // Act
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
 
             // Assert
             let status = (await insurance.insuredAgreements(agreement, {from: seller}))[0];
@@ -184,7 +189,7 @@ contract('Insurance', function(accounts) {
             await amber.mintLiquidToken(seller, insurancePremium, {from: amberOwner});
             await amber.approve(insurance.address, insurancePremium, {from: seller});
             await insurance.insure(agreement, insurancePremium, {from: seller});
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
             await insurance.approve(agreement, {from: insuranceOwner});
 
             var agreementAmount = await offer.priceFor(42);
@@ -209,7 +214,7 @@ contract('Insurance', function(accounts) {
             await amber.mintLiquidToken(seller, 42, {from: amberOwner});
             await amber.approve(insurance.address, 42, {from: seller});
             await insurance.insure(agreement, 42, {from: seller});
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
 
             // Act
             await insurance.reject(agreement, {from: insuranceOwner});
@@ -235,7 +240,7 @@ contract('Insurance', function(accounts) {
             await amber.mintLiquidToken(seller, 42, {from: amberOwner});
             await amber.approve(insurance.address, 42, {from: seller});
             await insurance.insure(agreement, 42, {from: seller});
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
 
             // Act
             await insurance.approve(agreement, {from: insuranceOwner});
@@ -261,11 +266,13 @@ contract('Insurance', function(accounts) {
             await amber.mintLiquidToken(seller, 42, {from: amberOwner});
             await amber.approve(insurance.address, 42, {from: seller});
             await insurance.insure(agreement, 42, {from: seller});
-            await insurance.reimburse(agreement, {from: seller});
+            await insurance.requestReimbursement(agreement, {from: seller});
 
             // Act & Assert
             await assertEx.isReverted(async() => await insurance.reject(agreement, {from: buyer}));
             await assertEx.isReverted(async() => await insurance.reject(agreement, {from: seller}));
+            await assertEx.isReverted(async() => await insurance.approve(agreement, {from: buyer}));
+            await assertEx.isReverted(async() => await insurance.approve(agreement, {from: seller}));
         });
     });
 });
