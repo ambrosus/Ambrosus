@@ -10,7 +10,7 @@
     "chai": "^4.1.1",
     "es6-promisify": "^5.0.0",
     "ethereumjs-util": "^5.1.2",
-    "ipfs": "git+https://git@github.com/ipfs/js-ipfs.git",
+    "ipfs": "^0.28.2",
     "multiplex": "^6.7.0",
     "truffle-contract": "^2.0.1",
     "web3": "^1.0.0-beta.13"
@@ -20,9 +20,9 @@
     "mocha": "^3.4.2"
   },
   "scripts": {
-    "test": "mocha ./storage-test && truffle test",
+    "test": "truffle test",
     "test-storage": "mocha ./storage-test",
-    "build": "truffle build"
+    "build": "truffle compile"
   },
   "repository": {
     "type": "git",
